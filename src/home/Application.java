@@ -44,7 +44,11 @@ public class Application extends javafx.application.Application
     // load main program stage from FXML
     Parent root = FXMLLoader.load(getClass().getResource("/fxml/app.fxml"));
     stage.setTitle("Home Automation");
-    stage.setScene(new Scene(root));
+
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(getClass().getResource("/stylesheets/application_default.css").toString());
+
+    stage.setScene(scene);
     stage.show();
   }
 
