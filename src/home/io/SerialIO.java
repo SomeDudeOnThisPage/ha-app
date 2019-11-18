@@ -23,7 +23,7 @@ public class SerialIO
     if (port != null)
     {
       current.openPort();
-      current.setComPortParameters(38400, 8, 1, 0);
+      current.setComPortParameters(USART_BAUDRATE, USART_PACKET_SIZE, 1, 0);
     }
   }
 
