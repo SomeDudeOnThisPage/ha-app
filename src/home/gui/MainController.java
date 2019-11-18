@@ -1,4 +1,4 @@
-package home;
+package home.gui;
 
 import com.fazecast.jSerialComm.SerialPort;
 import home.io.SerialIO;
@@ -11,7 +11,7 @@ import javafx.scene.control.MenuItem;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable
+public class MainController implements Initializable
 {
   @FXML
   Menu serialSelectionMenu;

@@ -3,6 +3,9 @@ package home.io;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import home.Application;
+
+import java.io.IOException;
 
 public class SerialIO
 {
@@ -18,12 +21,30 @@ public class SerialIO
 
   private static SerialPort current;
 
+  public static synchronized void initialize()
+  {
+    // initialize list of ports
+    SerialPort[] ports = SerialIO.getPorts();
+    for (SerialPort port : ports)
+    {
+      Application.debug("found registered serial port \'" + port.getDescriptivePortName() + "\' at \'" + port.getSystemPortName() + "\'");
+
+      // COM6 is an emulated serial port from com0com on my machine
+      if (port.getSystemPortName().equals("COM7"))
+      {
+        SerialIO.setPort(port);
+      }
+    }
+  }
+
   public static synchronized void setPort(SerialPort port)
   {
     current = port;
 
     if (port != null)
     {
+      Application.debug("connecting to serial port \'" + port.getDescriptivePortName() + "\' at \'" + port.getSystemPortName() + "\'");
+
       current.openPort();
       current.setComPortParameters(USART_BAUDRATE, USART_PACKET_SIZE, 1, 0);
 
@@ -43,7 +64,9 @@ public class SerialIO
 
           byte[] data = new byte[current.bytesAvailable()];
           current.readBytes(data, data.length);
-          System.out.println("Received data of size: " + data.length);
+
+          Application.debug("received data packet with size of " + data.length + " bytes");
+
           CommunicationAPI.update(new String(data));
         }
       });
@@ -55,11 +78,25 @@ public class SerialIO
     return SerialPort.getCommPorts();
   }
 
-  /**
-   * Adds data to the buffer to be sent next.
-   * @param data data to be sent
-   */
-  public static synchronized void send(String data)
+  public static synchronized void cleanup()
   {
+    Application.debug("closing connection to serial port \'" + current.getDescriptivePortName() + "\' at \'" + current.getSystemPortName() + "\'");
+    current.closePort();
+  }
+
+  public static synchronized void write(String data)
+  {
+    // jSerialComm buffers internally so there's no need for us to handle that manually
+    try
+    {
+      current.getOutputStream().write(data.getBytes());
+
+      // let's not print line breaks in debug messages
+      Application.debug("sent data packet with content \'" + data.replace("\n", "\\n").replace("\r", "\\r") + "\'");
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
   }
 }
