@@ -1,6 +1,8 @@
 package home.io;
 
 import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
 public class SerialIO
 {
@@ -24,6 +26,27 @@ public class SerialIO
     {
       current.openPort();
       current.setComPortParameters(USART_BAUDRATE, USART_PACKET_SIZE, 1, 0);
+
+      current.addDataListener(new SerialPortDataListener()
+      {
+        @Override
+        public int getListeningEvents()
+        {
+          return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+        }
+
+        @Override
+        public void serialEvent(SerialPortEvent event)
+        {
+          if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) { return; }
+          if (current.bytesAvailable() == 0) { return; }
+
+          byte[] data = new byte[current.bytesAvailable()];
+          current.readBytes(data, data.length);
+          System.out.println("Received data of size: " + data.length);
+          CommunicationAPI.update(new String(data));
+        }
+      });
     }
   }
 

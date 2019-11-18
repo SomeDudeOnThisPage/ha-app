@@ -12,6 +12,11 @@ import java.io.IOException;
 
 public class Main extends Application
 {
+  public static void debug()
+  {
+
+  }
+
   @Override
   public void start(Stage stage) throws Exception
   {
@@ -19,6 +24,14 @@ public class Main extends Application
     stage.setTitle("Home Automation");
     stage.setScene(new Scene(root));
     stage.show();
+  }
+
+  /**
+   * Main Application update loop
+   */
+  private void update()
+  {
+
   }
 
   public static void main(String[] args)
@@ -29,7 +42,7 @@ public class Main extends Application
       System.out.println(port.getDescriptivePortName());
 
       // COM6 is an emulated serial port from com0com on my machine
-      if (port.getSystemPortName().equals("COM6"))
+      if (port.getSystemPortName().equals("COM7"))
       {
         SerialIO.setPort(port);
 
