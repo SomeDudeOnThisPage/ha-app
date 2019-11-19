@@ -3,7 +3,6 @@ package home.gui;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
 public class FloorPlan extends Canvas
 {
@@ -45,7 +44,7 @@ public class FloorPlan extends Canvas
 
     this.diffuse = new Image(getClass().getResource("/maps/m01/diffuse.png").toString());
 
-    this.scale(0.5);
+    this.scale(1.25);
     this.setVisible(true);
   }
 }

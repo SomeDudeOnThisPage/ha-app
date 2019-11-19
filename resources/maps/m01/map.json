@@ -1,0 +1,28 @@
+{
+  "map_size": 10,
+  "diffuse": "diffuse.png",
+  "lookup": "pos_lookup.png",
+  "rooms": [
+    {
+      "lights": [
+        {
+          "position": [100.0, 100.0]
+        }
+      ]
+    },
+    {
+      "lights": [
+        {
+          "position": [100.0, 100.0]
+        }
+      ]
+    },
+    {
+      "lights": [
+        {
+          "position": [100.0, 100.0]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package home;
 
 import home.io.SerialIO;
+import home.model.House;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,6 +17,31 @@ public class Application extends javafx.application.Application
 {
   private static boolean DEBUG = false;
   private static String[] args;
+
+  public static Stage STAGE;
+
+  /**
+   * The current model the application is using.
+   */
+  private static House model;
+
+  /**
+   * Sets the model to be used. This will trigger loading of a new model from a map.json file and a chain of requests to the WSN as values have to be reevaluated.
+   * @param data JSON file containing the maps data
+   */
+  public static synchronized void setModel(File data)
+  {
+    // todo: clear current model (if there is one) from GUI
+    try
+    {
+      Application.model = new House(data);
+    }
+    catch (Exception e)
+    {
+      // todo: error handling with alerts or whatever
+      e.printStackTrace();
+    }
+  }
 
   // todo: probably use a real logger
   public static void debug(Object message)
@@ -28,6 +55,8 @@ public class Application extends javafx.application.Application
   @Override
   public void start(Stage stage) throws Exception
   {
+    Application.STAGE = stage;
+
     // evaluate command line parameters
     Application.cmd(Application.args);
 
@@ -42,11 +71,11 @@ public class Application extends javafx.application.Application
     SerialIO.write("Hello World\n\r");
 
     // load main program stage from FXML
-    Parent root = FXMLLoader.load(getClass().getResource("/fxml/app.fxml"));
+    Parent root = FXMLLoader.load(new File("resources/fxml/app.fxml").toURI().toURL());
     stage.setTitle("Home Automation");
 
     Scene scene = new Scene(root);
-    scene.getStylesheets().add(getClass().getResource("/stylesheets/application_default.css").toString());
+    scene.getStylesheets().add("/stylesheets/application_default.css");
 
     stage.setScene(scene);
     stage.show();
