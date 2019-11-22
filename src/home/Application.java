@@ -30,9 +30,6 @@ public class Application extends javafx.application.Application
    * @param data JSON file containing the maps data
    */
 
-  public static void heating(String temperature){}
-  public static void lights(String lights, float brightness){}
-  public static void fan(String temperature, String faninstruction){}
 
   public static synchronized void setModel(File data)
   {
@@ -49,16 +46,12 @@ public class Application extends javafx.application.Application
   }
 
   // todo: probably use a real logger
-  public static String debug(Object message)
+  public static void debug(Object message)
   {
-    String mssg = new String();
     if (Application.DEBUG)
     {
       System.out.println("[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date()) + "]" + ":[DEBUG] " + message.toString());
-      mssg = message.toString();
-      mssg = mssg.substring(0, (mssg.length() -2));
     }
-    return mssg;
   }
 
   @Override
