@@ -11,17 +11,16 @@ import javafx.stage.DirectoryChooser;
 
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable
 {
   @FXML
-  Menu serialSelectionMenu;
+  private Menu serialSelectionMenu;
 
   @FXML
-  ScrollPane scrollPane;
+  private ScrollPane scrollPane;
 
   @Override
   public void initialize(URL url, ResourceBundle resources)

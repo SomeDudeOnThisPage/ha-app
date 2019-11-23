@@ -70,7 +70,7 @@ public class Application extends javafx.application.Application
     SerialIO.initialize();
 
     // do some tests
-    SerialIO.write("Hello World\n\r");
+    // SerialIO.write("Hello World\n\r");
 
     // load main program stage from FXML
     Parent root = FXMLLoader.load(new File("resources/fxml/app.fxml").toURI().toURL());
