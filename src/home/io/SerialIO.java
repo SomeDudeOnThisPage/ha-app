@@ -28,17 +28,13 @@ public class SerialIO
     for (SerialPort port : ports)
     {
       Application.debug("found registered serial port \'" + port.getDescriptivePortName() + "\' at \'" + port.getSystemPortName() + "\'");
-
-      // COM6 is an emulated serial port from com0com on my machine
-      if (port.getSystemPortName().equals("COM7"))
-      {
-        SerialIO.setPort(port);
-      }
     }
   }
 
   public static synchronized void setPort(SerialPort port)
   {
+    SerialIO.cleanup();
+
     current = port;
 
     if (port != null)
@@ -80,8 +76,11 @@ public class SerialIO
 
   public static synchronized void cleanup()
   {
-    Application.debug("closing connection to serial port \'" + current.getDescriptivePortName() + "\' at \'" + current.getSystemPortName() + "\'");
-    current.closePort();
+    if (current != null)
+    {
+      Application.debug("closing connection to serial port \'" + current.getDescriptivePortName() + "\' at \'" + current.getSystemPortName() + "\'");
+      current.closePort();
+    }
   }
 
   public static synchronized void write(String data)

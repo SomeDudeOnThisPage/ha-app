@@ -26,16 +26,10 @@ public class House
   /**
    * A house contains a list of Room-Objects, loaded from a JSON data file.
    * @see Room
-   * @param map JSON file containing the map data
-   * @throws Exception file not found exception & JSON errors
+   * @param data JSONObject containing the map data
    */
-  public House(File map) throws Exception
+  public House(JSONObject data)
   {
-    Application.debug("creating new model from map \'" + map.getPath() + "\'");
-
-    // load from json
-    JSONObject data = (JSONObject) new JSONParser().parse(new FileReader(map));
-
     // create rooms
     JSONArray rooms = (JSONArray) data.get("rooms");
     this.rooms = new Room[rooms.size()];
