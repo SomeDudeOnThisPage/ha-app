@@ -1,7 +1,10 @@
 package home.io;
 
 public class ManualControl {
-    public static void heating(){}
-    public static void lights(){}
-    public static void fan(){}
+
+    public void process(String data){}
+
+    private void heating(){}
+    private void lights(){}
+    private void fan(){}
 }
