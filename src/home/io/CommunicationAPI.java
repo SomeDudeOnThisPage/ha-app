@@ -18,9 +18,9 @@ public class CommunicationAPI
 
       switch (mode) {
         case 0:
-            AutomaticControl.process(data);
+            //AutomaticControl.process(data);
         case 1:
-            ManualControl.process(data);
+            //ManualControl.process(data);
     }
 
 

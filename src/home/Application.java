@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
-import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -47,6 +46,11 @@ public class Application extends javafx.application.Application
       // todo: error handling with alerts or whatever
       e.printStackTrace();
     }
+  }
+
+  public static synchronized House getModel()
+  {
+    return Application.model;
   }
 
   // todo: probably use a real logger
