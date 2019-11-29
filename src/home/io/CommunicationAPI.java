@@ -3,6 +3,8 @@ import home.Application;
 import home.model.House;
 import home.model.Room;
 import home.model.Light;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 
 public class CommunicationAPI
@@ -21,15 +23,17 @@ public class CommunicationAPI
 
     if (parts[5].equals("setLightmode")){
         int roomID = Integer.parseInt(parts[6]);
-        Room room = House.getRoom(roomID);
-        Light[] lights = room.getLights();
+
+        //++++ROBIN ICH KANN DIE KACK ROOMID NICHT ABRUFEN++++
+        //Room room = House.getRoom(roomID);
+        //Light[] lights = room.getLights();
         int LightID = Integer.parseInt(parts[7]);
 
         if (parts[8].equals("ON")) {
-            lights[LightID].on();
+
         }
         else if (parts[8].equals("OFF")){
-            lights[LightID].off();
+         //   CommunicationAPIInterface.;
         }
     else if (parts[5].equals("setTemperature")){
 
