@@ -23,19 +23,17 @@ public class CommunicationAPI
     String[] parts = data.split(" ");
 
     if (parts[5].equals("setLightmode")){
-        int roomID = Integer.parseInt(parts[6]);
 
+        int roomID = Integer.parseInt(parts[6]);
         Room room = home.getRoom(roomID);
         Light[] lights = room.getLights();
         int LightID = Integer.parseInt(parts[7]);
+        int mode = Integer.parseInt(parts[8]);
 
-        if (parts[8].equals("ON")) {
+        if (parts[8].equals("SWITCH")) {
+            CommunicationAPIInterface.onLightSwitch(roomID, LightID, mode);
+        }
 
-        }
-        else if (parts[8].equals("OFF")){
-            int modus=0;
-            CommunicationAPIInterface.onLightSwitch(roomID, LightID, modus);
-        }
     else if (parts[5].equals("setTemperature")){
 
         }
