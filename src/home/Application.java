@@ -11,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -20,6 +19,7 @@ import java.util.Date;
 public class Application extends javafx.application.Application
 {
   private static boolean DEBUG = false;
+  private static boolean LOG = true;
   private static String[] args;
 
   public static Stage STAGE;
@@ -36,16 +36,12 @@ public class Application extends javafx.application.Application
    */
   public static synchronized void setModel(JSONObject data)
   {
-    // todo: clear current model (if there is one) from GUI
     try
     {
-      // create new model
       Application.model = new House(data);
-
     }
     catch (Exception e)
     {
-      // todo: error handling with alerts or whatever
       e.printStackTrace();
     }
   }
@@ -61,6 +57,11 @@ public class Application extends javafx.application.Application
     if (Application.DEBUG)
     {
       System.out.println("[" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date()) + "]" + ":[DEBUG] " + message.toString());
+    }
+
+    if (Application.LOG)
+    {
+      // todo: log
     }
   }
 
@@ -81,9 +82,6 @@ public class Application extends javafx.application.Application
 
     // initialize communications API
     CommunicationAPI.initialize(new SerialAPIListener());
-
-    // do some tests
-    // SerialIO.write("Hello World\n\r");
 
     // load main program stage from FXML
     Parent root = FXMLLoader.load(new File("resources/fxml/app.fxml").toURI().toURL());
@@ -122,6 +120,8 @@ public class Application extends javafx.application.Application
           case "-load":
             // load map here based on string at args[i+1]
             i++;
+          case "-nolog":
+            Application.LOG = false;
           default:
             Application.debug("found illegal command line parameter \'" + args[i] + "\'");
 

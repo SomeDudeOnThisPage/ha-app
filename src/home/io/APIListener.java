@@ -17,6 +17,6 @@ public interface APIListener
 
   void onLightSwitch(int roomID, int lightID, Light.State state);
   void onLightMode(int roomID, int lightID, Light.Mode mode);
-  void onTemperature(int roomID, int lightID, double actual);
+  void onTemperature(int roomID, float actual);
   void onDebug(String message);
 }

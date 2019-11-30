@@ -70,10 +70,12 @@ public class CommunicationAPI
 
     if (parts[5].equals("setLightmode")){
 
-        int roomID = Integer.parseInt(parts[6]);
+        // was machst du hier mit dem modell???????????
+        // warum??
+        /*int roomID = Integer.parseInt(parts[6]);
         Room room = home.getRoom(roomID);
         Light[] lights = room.getLights();
-        int LightID = Integer.parseInt(parts[7]);
+        int LightID = Integer.parseInt(parts[7]);*/
         int mode = Integer.parseInt(parts[8]);
 
         if (parts[8].equals("SWITCH")) {

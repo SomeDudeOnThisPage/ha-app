@@ -3,10 +3,6 @@ package home.model;
 import home.Application;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.io.File;
-import java.io.FileReader;
 
 public class House
 {
@@ -18,9 +14,16 @@ public class House
    * @param id id of the room, this is determined by the place of the room in the JSON array of the map file
    * @return room
    */
-  public Room getRoom(int id)
+  public Room getRoom(int id) throws Exception
   {
-    return rooms[id];
+    try
+    {
+      return this.rooms[id];
+    }
+    catch(Exception ignored)
+    {
+      return null;
+    }
   }
 
   /**

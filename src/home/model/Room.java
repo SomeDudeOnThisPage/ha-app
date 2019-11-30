@@ -14,7 +14,19 @@ public class Room
    * @return temperature
    */
   public Temperature temperature() { return this.temperature; }
-  public Light[] getLights(){return lights;}
+
+  public Light getLight(int id)
+  {
+    try
+    {
+      return this.lights[id];
+    }
+    catch(Exception ignored)
+    {
+      return null;
+    }
+  }
+
   /**
    * A room is a collection of data, namely a list of lights and a temperature.
    * @see Temperature
