@@ -2,26 +2,24 @@ package home.model;
 
 public class Light
 {
-  public static final int MODE_AUTOMATIC = 0;
-  public static final int MODE_MANUAL = 1;
+  public enum State { LIGHT_ON, LIGHT_OFF }
+  public enum Mode { MODE_AUTOMATIC, MODE_MANUAL }
 
-  private boolean enabled;
-  private int mode;
+  private State state;
+  private Mode mode;
 
   private double[] position;
 
-  public void on() { this.enabled = true; }
-  public void off() { this.enabled = false; }
-
-  public void setMode(int mode) { this.mode = mode; }
-  public int getMode() { return this.mode; }
+  public void setState(State state) { this.state = state; }
+  public void setMode(Mode mode) { this.mode = mode; }
+  public Mode getMode() { return this.mode; }
 
   public double[] getPosition() { return this.position; }
 
   public Light(double x, double y)
   {
-    this.enabled = false;
-    this.mode = Light.MODE_AUTOMATIC;
+    this.state = State.LIGHT_OFF;
+    this.mode = Mode.MODE_AUTOMATIC;
 
     // todo: inquire state of the light from the WSN
 

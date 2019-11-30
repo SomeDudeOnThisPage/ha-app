@@ -1,5 +1,7 @@
 package home;
 
+import home.io.CommunicationAPI;
+import home.io.SerialAPIListener;
 import home.io.SerialIO;
 import home.model.House;
 import javafx.application.Platform;
@@ -76,6 +78,9 @@ public class Application extends javafx.application.Application
 
     // initialize serial communication
     SerialIO.initialize();
+
+    // initialize communications API
+    CommunicationAPI.initialize(new SerialAPIListener());
 
     // do some tests
     // SerialIO.write("Hello World\n\r");

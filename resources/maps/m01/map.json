@@ -4,25 +4,32 @@
   "lookup": "pos_lookup.png",
   "rooms": [
     {
+      "temperature": [100.0, 200.0],
       "lights": [
         {
-          "position": [100.0, 100.0]
+          "position": [100.0, 100.0],
+          "diffuse": "light_default.png"
         }
       ]
     },
     {
+      "temperature": [200.0, 200.0],
       "lights": [
         {
-          "position": [100.0, 100.0]
+          "position": [200.0, 100.0],
+          "diffuse": "light_default.png"
         }
       ]
     },
     {
+      "temperature": [300.0, 200.0],
       "lights": [
         {
-          "position": [100.0, 100.0]
+          "position": [300.0, 100.0],
+          "diffuse": "light_default.png"
         }
       ]
     }
   ]
 }
+
