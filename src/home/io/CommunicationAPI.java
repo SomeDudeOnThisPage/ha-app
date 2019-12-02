@@ -46,15 +46,18 @@ public class CommunicationAPI
   // wichtig is nur dass die synchronized sind falls wir threading machen!
 
   public static synchronized void setLight(int roomid, int lightid, int status){
-    String message = "setLight "+Integer.toString(roomid)+" "+Integer.toString(lightid)+" "+Integer.toString(status);
+    String message = "setLight "+roomid+" "+lightid+" "+status;
+    SerialIO.write(message);
   }
 
   public static synchronized void setLightMode(int roomid, int lightid, int mode){
-    String message = "setLightMode "+Integer.toString(roomid)+" "+Integer.toString(lightid)+" "+Integer.toString(mode);
+    String message = "setLightMode "+roomid+" "+lightid+" "+mode;
+    SerialIO.write(message);
   }
 
   public static synchronized void tempReference(int roomid, Temperature temp){
-    String message = "temperatureRef"+Integer.toString(roomid)+" "+String.valueOf(temp.get());
+    String message = "temperatureRef"+roomid+" "+temp.get();
+    SerialIO.write(message);
   }
 
   /**
@@ -67,66 +70,54 @@ public class CommunicationAPI
 
     // stell sicher dass CommunicationAPI.initialize() gecallt wurde indem du (listener != null) checkst!!!!!!!!!
 
-    if (listener == null ) {throw new Exception("ERROR: LISTENER NOT AVAILABLE");}
+    if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE");}
     House home = Application.getModel();
-    if (home == null) { throw new Exception("no model"); }
+    if (home == null) { Application.debug("no model");}
 
 
     String[] parts = data.split(" ");
 
-    //  parts5    | parts6  | parts7  | parts8       |  parts9
+    //  parts0    | parts1  | parts2  | parts3       |  parts9
     //------------|---------|---------|--------------|---------------
     //  Operation | roomID  | lightID | SubOperation |  LightState
     //                        Temper                    Mode
 
-    if (parts[5].equals("setLightmode")){
 
-      int roomID = Integer.parseInt(parts[6]);
-      int lightID = Integer.parseInt(parts[7]);
+      int roomID = Integer.parseInt(parts[1]);
 
-      switch(parts[8]){
-        case "SWITCH":
+      switch(parts[0]){
+        case "LIGHTSWITCH":
           Light.State state;
+          int lightID = Integer.parseInt(parts[2]);
 
-          if (parts[9].equals("ON")){
+          if (parts[3].equals("ON")){
             state = Light.State.LIGHT_ON;
             listener.onLightSwitch(roomID, lightID, state);
           }
 
-          else if (parts[9].equals("OFF")) {
+          else if (parts[3].equals("OFF")) {
             state = Light.State.LIGHT_OFF;
             listener.onLightSwitch(roomID, lightID, state);
           }
           else
-            System.out.println("NO VALID MESSAGE");
+            Application.debug("NO VALID MESSAGE");
 
-        case "MODE":
+        case "LIGHTMODE":
           Light.Mode mode;
-          if (parts[9].equals("AUTO")) {
+          int lightID2 = Integer.parseInt(parts[2]);
+
+          if (parts[3].equals("AUTO")) {
             mode = Light.Mode.MODE_AUTOMATIC;
-            listener.onLightMode(roomID, lightID, mode);
+            listener.onLightMode(roomID, lightID2, mode);
           }
-          else if (parts[9].equals("Manual")){
+          else if (parts[3].equals("Manual")){
             mode = Light.Mode.MODE_MANUAL;
-            listener.onLightMode(roomID, lightID, mode);
+            listener.onLightMode(roomID, lightID2, mode);
           }
+        case "TEMPREF":
+          float temperature = Integer.parseInt(parts[2]);
+          listener.onTemperature(roomID, temperature);
       }
     }
 
-    else if (parts[5].equals("setTemperature")){
-      int roomID = Integer.parseInt(parts[6]);
-      float temperature = Integer.parseInt(parts[7]);
-
-      listener.onTemperature(roomID, temperature);
-    }
-
-    else
-      listener.onDebug(".....");
-
-    }
-
-        /*
-        Room room = home.getRoom(roomID);
-        Light[] lights = room.getLights();
-        */
   }
