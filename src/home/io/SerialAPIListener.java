@@ -38,6 +38,12 @@ public class SerialAPIListener implements APIListener
     return model;
   }
 
+  /**
+   * Implementation of the onLightSwitch callback.
+   * @param roomID room ID
+   * @param lightID light ID
+   * @param state state
+   */
   @Override
   public void onLightSwitch(int roomID, int lightID, Light.State state)
   {
@@ -54,6 +60,12 @@ public class SerialAPIListener implements APIListener
     }
   }
 
+  /**
+   * Implementation of the onLightMode callback
+   * @param roomID room ID
+   * @param lightID light ID
+   * @param mode mode
+   */
   @Override
   public void onLightMode(int roomID, int lightID, Light.Mode mode)
   {
@@ -70,6 +82,11 @@ public class SerialAPIListener implements APIListener
     }
   }
 
+  /**
+   * Implementation of the onTemperature callback.
+   * @param roomID room ID
+   * @param actual actual temperature
+   */
   @Override
   public void onTemperature(int roomID, float actual)
   {
@@ -86,6 +103,10 @@ public class SerialAPIListener implements APIListener
     }
   }
 
+  /**
+   * Implementation of the onDebug callback.
+   * @param message debug message
+   */
   @Override
   public void onDebug(String message)
   {

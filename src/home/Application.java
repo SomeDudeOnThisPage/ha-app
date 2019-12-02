@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
 
 public class Application extends javafx.application.Application
 {
@@ -24,6 +25,8 @@ public class Application extends javafx.application.Application
 
   public static Stage STAGE;
   public static final String TITLE = "ZigBee Home Automation";
+
+  private static Logger logger;
 
   /**
    * The current model the application is using.
@@ -51,8 +54,7 @@ public class Application extends javafx.application.Application
     return Application.model;
   }
 
-  // todo: probably use a real logger
-  public static void debug(Object message)
+  public static void debug(Object message, Level level)
   {
     if (Application.DEBUG)
     {
@@ -61,8 +63,13 @@ public class Application extends javafx.application.Application
 
     if (Application.LOG)
     {
-      // todo: log
+      Application.logger.log(message, level);
     }
+  }
+
+  public static void debug(Object message)
+  {
+    Application.debug(message, Level.INFO);
   }
 
   @Override
@@ -92,14 +99,6 @@ public class Application extends javafx.application.Application
 
     stage.setScene(scene);
     stage.show();
-  }
-
-  /**
-   * Application Application update loop
-   */
-  private void update()
-  {
-
   }
 
   /**
@@ -139,6 +138,8 @@ public class Application extends javafx.application.Application
 
   public static void main(String[] args)
   {
+    Application.logger = new Logger(new SimpleDateFormat("yyyy-MM-dd.HH-mm-ss").format(new Date()));
+
     // copy arguments so we can access them after we launched the app as we need to initialize the JavaFX application to show error alert dialogs
     Application.args = args;
     Application.launch(args);
