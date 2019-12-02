@@ -48,27 +48,29 @@ public class CommunicationAPI
   public static synchronized void setLight(int roomid, int lightid, int status){
     String message = "setLight "+Integer.toString(roomid)+" "+Integer.toString(lightid)+" "+Integer.toString(status);
   }
-  public static synchronized void setLightMode(int roomid, int lightid, int mode){ /*serialize*/ }
-  public static synchronized void tempReference(int roomid, Temperature temp){ /*serialize*/ }
+
+  public static synchronized void setLightMode(int roomid, int lightid, int mode){
+    String message = "setLightMode "+Integer.toString(roomid)+" "+Integer.toString(lightid)+" "+Integer.toString(mode);
+  }
+
+  public static synchronized void tempReference(int roomid, Temperature temp){
+    String message = "temperatureRef"+Integer.toString(roomid)+" "+String.valueOf(temp.get());
+  }
 
   /**
    * This method is called by the serial-management class when an ingoing message is received.
    * @param data Received data in serialized string form
    * @see SerialIO
    */
-  public static synchronized void update(String data)
-  {
+  public static synchronized void update(String data) throws Exception {
     Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
 
     // stell sicher dass CommunicationAPI.initialize() gecallt wurde indem du (listener != null) checkst!!!!!!!!!
 
-    if (listener == null )
-      System.out.println("ERROR: LISTENER NOT AVAILABLE");
-
+    if (listener == null ) {throw new Exception("ERROR: LISTENER NOT AVAILABLE");}
     House home = Application.getModel();
+    if (home == null) { throw new Exception("no model"); }
 
-    if (home == null)
-      System.out.println("ERROR: NO MODEL EXISTING");
 
     String[] parts = data.split(" ");
 
