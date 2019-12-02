@@ -44,48 +44,89 @@ public class CommunicationAPI
 
   // die outgoing methods können direkt in der CommunicationAPI sein, auch static!
   // wichtig is nur dass die synchronized sind falls wir threading machen!
-  public static synchronized void setLight(int roomid, int lightid, int status){ /*serialize*/ }
-  public static synchronized void setLightMode(int roomid, int lightid, int mode){ /*serialize*/ }
-  public static synchronized void tempReference(int roomid, Temperature temp){ /*serialize*/ }
+
+  public static synchronized void setLight(int roomid, int lightid, int status){
+    String message = "setLight "+Integer.toString(roomid)+" "+Integer.toString(lightid)+" "+Integer.toString(status);
+  }
+
+  public static synchronized void setLightMode(int roomid, int lightid, int mode){
+    String message = "setLightMode "+Integer.toString(roomid)+" "+Integer.toString(lightid)+" "+Integer.toString(mode);
+  }
+
+  public static synchronized void tempReference(int roomid, Temperature temp){
+    String message = "temperatureRef"+Integer.toString(roomid)+" "+String.valueOf(temp.get());
+  }
 
   /**
    * This method is called by the serial-management class when an ingoing message is received.
    * @param data Received data in serialized string form
    * @see SerialIO
    */
-  public static synchronized void update(String data)
-  {
+  public static synchronized void update(String data) throws Exception {
     Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
 
     // stell sicher dass CommunicationAPI.initialize() gecallt wurde indem du (listener != null) checkst!!!!!!!!!
 
-    //part with first relevant data is [5] for RoomID
+    if (listener == null ) {throw new Exception("ERROR: LISTENER NOT AVAILABLE");}
     House home = Application.getModel();
+    if (home == null) { throw new Exception("no model"); }
 
-    if (home == null){
-        System.out.println("ERROR: NO MODEL EXISTING");
-    }
 
     String[] parts = data.split(" ");
 
+    //  parts5    | parts6  | parts7  | parts8       |  parts9
+    //------------|---------|---------|--------------|---------------
+    //  Operation | roomID  | lightID | SubOperation |  LightState
+    //                        Temper                    Mode
+
     if (parts[5].equals("setLightmode")){
 
-        // was machst du hier mit dem modell???????????
-        // warum??
-        /*int roomID = Integer.parseInt(parts[6]);
-        Room room = home.getRoom(roomID);
-        Light[] lights = room.getLights();
-        int LightID = Integer.parseInt(parts[7]);*/
-        int mode = Integer.parseInt(parts[8]);
+      int roomID = Integer.parseInt(parts[6]);
+      int lightID = Integer.parseInt(parts[7]);
 
-        if (parts[8].equals("SWITCH")) {
-            // hier wäre dann: listener.onLightSwitch(...) !!!
-        }
+      switch(parts[8]){
+        case "SWITCH":
+          Light.State state;
 
-    else if (parts[5].equals("setTemperature")){
+          if (parts[9].equals("ON")){
+            state = Light.State.LIGHT_ON;
+            listener.onLightSwitch(roomID, lightID, state);
+          }
 
-        }
+          else if (parts[9].equals("OFF")) {
+            state = Light.State.LIGHT_OFF;
+            listener.onLightSwitch(roomID, lightID, state);
+          }
+          else
+            System.out.println("NO VALID MESSAGE");
+
+        case "MODE":
+          Light.Mode mode;
+          if (parts[9].equals("AUTO")) {
+            mode = Light.Mode.MODE_AUTOMATIC;
+            listener.onLightMode(roomID, lightID, mode);
+          }
+          else if (parts[9].equals("Manual")){
+            mode = Light.Mode.MODE_MANUAL;
+            listener.onLightMode(roomID, lightID, mode);
+          }
+      }
     }
 
+    else if (parts[5].equals("setTemperature")){
+      int roomID = Integer.parseInt(parts[6]);
+      float temperature = Integer.parseInt(parts[7]);
+
+      listener.onTemperature(roomID, temperature);
+    }
+
+    else
+      listener.onDebug(".....");
+
+    }
+
+        /*
+        Room room = home.getRoom(roomID);
+        Light[] lights = room.getLights();
+        */
   }
-}

@@ -63,7 +63,11 @@ public class SerialIO
 
           Application.debug("received data packet with size of " + data.length + " bytes");
 
-          CommunicationAPI.update(new String(data));
+          try {
+            CommunicationAPI.update(new String(data));
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
         }
       });
     }
