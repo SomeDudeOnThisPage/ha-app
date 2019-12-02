@@ -14,7 +14,7 @@ public class House
    * @param id id of the room, this is determined by the place of the room in the JSON array of the map file
    * @return room
    */
-  public Room getRoom(int id) throws Exception
+  public Room getRoom(int id)
   {
     try
     {
@@ -24,6 +24,11 @@ public class House
     {
       return null;
     }
+  }
+
+  public Room[] getRooms()
+  {
+    return this.rooms;
   }
 
   /**

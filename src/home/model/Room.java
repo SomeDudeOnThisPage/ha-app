@@ -27,6 +27,11 @@ public class Room
     }
   }
 
+  public Light[] getLights()
+  {
+    return this.lights;
+  }
+
   /**
    * A room is a collection of data, namely a list of lights and a temperature.
    * @see Temperature

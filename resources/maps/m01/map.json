@@ -2,13 +2,13 @@
   "map_size": 10,
   "diffuse": "diffuse.png",
   "lookup": "pos_lookup.png",
+  "light_diffuse": "light.png",
   "rooms": [
     {
       "temperature": [100.0, 200.0],
       "lights": [
         {
-          "position": [100.0, 100.0],
-          "diffuse": "light_default.png"
+          "position": [100.0, 50.0]
         }
       ]
     },
@@ -16,8 +16,7 @@
       "temperature": [200.0, 200.0],
       "lights": [
         {
-          "position": [200.0, 100.0],
-          "diffuse": "light_default.png"
+          "position": [200.0, 50.0]
         }
       ]
     },
@@ -25,8 +24,7 @@
       "temperature": [300.0, 200.0],
       "lights": [
         {
-          "position": [300.0, 100.0],
-          "diffuse": "light_default.png"
+          "position": [300.0, 50.0]
         }
       ]
     }
