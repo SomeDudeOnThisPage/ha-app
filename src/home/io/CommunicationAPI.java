@@ -45,12 +45,12 @@ public class CommunicationAPI
   // die outgoing methods können direkt in der CommunicationAPI sein, auch static!
   // wichtig is nur dass die synchronized sind falls wir threading machen!
 
-  public static synchronized void setLight(int roomid, int lightid, int status){
+  public static synchronized void setLight(int roomid, int lightid, Light.Mode status){
     String message = "setLight "+roomid+" "+lightid+" "+status;
     SerialIO.write(message);
   }
 
-  public static synchronized void setLightMode(int roomid, int lightid, int mode){
+  public static synchronized void setLightMode(int roomid, int lightid, Light.State mode){
     String message = "setLightMode "+roomid+" "+lightid+" "+mode;
     SerialIO.write(message);
   }
@@ -60,6 +60,7 @@ public class CommunicationAPI
     SerialIO.write(message);
   }
 
+  public static synchronized void deviceStatus(){}
   /**
    * This method is called by the serial-management class when an ingoing message is received.
    * @param data Received data in serialized string form
@@ -68,20 +69,12 @@ public class CommunicationAPI
   public static synchronized void update(String data) throws Exception {
     Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
 
-    // stell sicher dass CommunicationAPI.initialize() gecallt wurde indem du (listener != null) checkst!!!!!!!!!
-
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE");}
     House home = Application.getModel();
     if (home == null) { Application.debug("no model");}
 
 
     String[] parts = data.split(" ");
-
-    //  parts0    | parts1  | parts2  | parts3       |  parts9
-    //------------|---------|---------|--------------|---------------
-    //  Operation | roomID  | lightID | SubOperation |  LightState
-    //                        Temper                    Mode
-
 
       int roomID = Integer.parseInt(parts[1]);
 
@@ -114,7 +107,7 @@ public class CommunicationAPI
             mode = Light.Mode.MODE_MANUAL;
             listener.onLightMode(roomID, lightID2, mode);
           }
-        case "TEMPREF":
+        case "TEMPERATURE":
           float temperature = Integer.parseInt(parts[2]);
           listener.onTemperature(roomID, temperature);
       }
