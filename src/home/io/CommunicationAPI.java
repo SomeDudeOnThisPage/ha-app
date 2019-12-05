@@ -71,45 +71,57 @@ public class CommunicationAPI
 
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE");}
     House home = Application.getModel();
-    if (home == null) { Application.debug("no model");}
+    if (home == null) { Application.debug("NO MODEL");}
 
 
     String[] parts = data.split(" ");
 
-      int roomID = Integer.parseInt(parts[1]);
+    int roomID = Integer.parseInt(parts[1]);
 
-      switch(parts[0]){
-        case "LIGHTSWITCH":
-          Light.State state;
-          int lightID = Integer.parseInt(parts[2]);
+    switch(parts[0]){
+      case "LIGHTSWITCH":
+        Light.State state;
+        int lightID = Integer.parseInt(parts[2]);
 
-          if (parts[3].equals("ON")){
-            state = Light.State.LIGHT_ON;
-            listener.onLightSwitch(roomID, lightID, state);
-          }
+        if (parts[3].equals("ON")){
+          state = Light.State.LIGHT_ON;
+          listener.onLightSwitch(roomID, lightID, state);
+        }
 
-          else if (parts[3].equals("OFF")) {
-            state = Light.State.LIGHT_OFF;
-            listener.onLightSwitch(roomID, lightID, state);
-          }
-          else
-            Application.debug("NO VALID MESSAGE");
+        else if (parts[3].equals("OFF")) {
+          state = Light.State.LIGHT_OFF;
+          listener.onLightSwitch(roomID, lightID, state);
+        }
+        else
+          Application.debug("NO VALID MESSAGE");
 
-        case "LIGHTMODE":
-          Light.Mode mode;
-          int lightID2 = Integer.parseInt(parts[2]);
+      case "LIGHTMODE":
+        Light.Mode mode;
+        int lightID2 = Integer.parseInt(parts[2]);
 
-          if (parts[3].equals("AUTO")) {
-            mode = Light.Mode.MODE_AUTOMATIC;
-            listener.onLightMode(roomID, lightID2, mode);
-          }
-          else if (parts[3].equals("Manual")){
-            mode = Light.Mode.MODE_MANUAL;
-            listener.onLightMode(roomID, lightID2, mode);
-          }
-        case "TEMPERATURE":
-          float temperature = Integer.parseInt(parts[2]);
-          listener.onTemperature(roomID, temperature);
+        if (parts[3].equals("AUTO")) {
+          mode = Light.Mode.MODE_AUTOMATIC;
+          listener.onLightMode(roomID, lightID2, mode);
+        }
+        else if (parts[3].equals("MANUAL")){
+          mode = Light.Mode.MODE_MANUAL;
+          listener.onLightMode(roomID, lightID2, mode);
+        }
+      case "TEMPERATURE":
+        float temperature = Integer.parseInt(parts[2]);
+        listener.onTemperature(roomID, temperature);
+      case "INIT":
+
+        //Iteration über Liste von Lichtern aus Liste von Räumen
+        //Aufruf von initHouse für jede Lampe in jedem Raum
+        Room[] rm = home.getRooms();
+        for (int i=0; i<rm.length; i++) {
+          Light[] lights = rm[i].getLights();
+            for (int j=0; j<lights.length; j++){
+              listener.initHouse(rm[i], lights[j]);
+
+            }
+        }
       }
     }
 

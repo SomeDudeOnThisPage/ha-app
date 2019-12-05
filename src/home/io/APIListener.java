@@ -1,6 +1,7 @@
 package home.io;
 
 import home.model.Light;
+import home.model.Room;
 
 /**
  * <h1>APIListener</h1>
@@ -19,4 +20,5 @@ public interface APIListener
   void onLightMode(int roomID, int lightID, Light.Mode mode);
   void onTemperature(int roomID, float actual);
   void onDebug(String message);
+  void initHouse(Room r, Light j);
 }

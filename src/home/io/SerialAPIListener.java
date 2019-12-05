@@ -3,6 +3,7 @@ package home.io;
 import home.Application;
 import home.model.House;
 import home.model.Light;
+import home.model.Room;
 
 /**
  * <h1>SerialAPIListener</h1>
@@ -112,5 +113,12 @@ public class SerialAPIListener implements APIListener
   {
     Application.debug("method \'onDebug\' has been called");
     Application.debug("[WSN]: " + message);
+  }
+
+  @Override
+  public void initHouse(Room room, Light light)
+  {
+    Application.debug("Initializing: ");
+    //Room to roomID, Light to lightID???
   }
 }
