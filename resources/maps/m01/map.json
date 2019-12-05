@@ -5,6 +5,7 @@
   "light_diffuse": "light.png",
   "rooms": [
     {
+      "alt": "Living Room",
       "temperature": [100.0, 200.0],
       "lights": [
         {
@@ -13,6 +14,7 @@
       ]
     },
     {
+      "alt": "Kitchen",
       "temperature": [200.0, 200.0],
       "lights": [
         {
@@ -21,6 +23,7 @@
       ]
     },
     {
+      "alt": "Cleaning Cupboard",
       "temperature": [300.0, 200.0],
       "lights": [
         {

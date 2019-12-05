@@ -10,11 +10,13 @@ import java.util.ResourceBundle;
 
 /**
  * This class is used to control the functionality of the canvas subscene.
+ * The CanvasController also manages the view component of the MVC-Model
  *
  * @see MainController
  *
  * @author Robin Buhlmann
  * @version 0.1
+ * @since 2019-11-20
  */
 public class CanvasController implements Initializable
 {
@@ -47,12 +49,15 @@ public class CanvasController implements Initializable
         }
       }
 
+      // prevent event propagation
       event.consume();
     });
   }
 
   /**
-   * Constructs a FloorPlan
+   * Constructs a FloorPlan and appends the canvas to the scroll pane.
+   * @param path path to the map folder
+   * @param data contents of map.json
    */
   public void setView(String path, JSONObject data)
   {

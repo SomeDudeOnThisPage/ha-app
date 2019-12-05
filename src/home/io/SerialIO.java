@@ -84,6 +84,7 @@ public class SerialIO
     {
       Application.debug("closing connection to serial port \'" + current.getDescriptivePortName() + "\' at \'" + current.getSystemPortName() + "\'");
       current.closePort();
+      current = null;
     }
   }
 

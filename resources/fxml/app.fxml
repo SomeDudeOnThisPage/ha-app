@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.gui.MainController">
+<VBox minHeight="600.0" minWidth="800.0" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.gui.MainController">
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
@@ -19,7 +18,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#menu_onLoadFloorPlan" text="Load Floor Plan" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Preferences" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
+            <MenuItem mnemonicParsing="false" onAction="#menu_onQuit" text="Quit" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Connection Properties">
@@ -30,7 +29,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#menu_onRefreshPortsList" text="Refresh Ports List">
 
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" text="Disconnect" />
+                  <MenuItem mnemonicParsing="false" onAction="#menu_onDisconnect" text="Disconnect" />
                </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
@@ -44,12 +43,15 @@
          <children>
             <SplitPane dividerPositions="0.65" layoutX="250.0" layoutY="97.0" prefHeight="375.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #FFFFFF;">
+                <AnchorPane minHeight="350.0" minWidth="350.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #FFFFFF;">
                      <children>
                         <fx:include fx:id="canvas" source="canvas.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
-                <AnchorPane />
+                <AnchorPane minWidth="250.0">
+                     <children>
+                        <Accordion prefHeight="693.0" prefWidth="374.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children></AnchorPane>
               </items>
             </SplitPane>
          </children>

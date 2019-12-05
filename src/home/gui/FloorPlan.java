@@ -15,21 +15,62 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 
+/**
+ * FloorPlan class extending Canvas.
+ * Used for visual representation of our current model.
+ *
+ * @author Robin Buhlmann
+ * @version 0.1
+ * @since 2019-11-26
+ */
 public class FloorPlan extends Canvas
 {
+  /**
+   * Base canvas size in pixels.
+   */
   private static final double BASE_SIZE = 1024.0;
+
+  /**
+   * Maximum scale of visual canvas content.
+   */
   private static final double SCALE_MAX = 2.0;
+
+  /**
+   * Minimum scale of visual canvas content.
+   */
   private static final double SCALE_MIN = 0.5;
 
+  /**
+   * Base-Size of light sprites.
+   */
   private static final double LIGHT_SIZE = 128.0;
 
+  /**
+   * Floor Plan diffuse texture.
+   */
   private Image diffuse;
+
+  /**
+   * Light sprite diffuse texture.
+   */
   private Image light;
 
+  /**
+   * GraphicsContext of the canvas.
+   */
   private GraphicsContext graphics;
+
+  /**
+   * Current scale of the view.
+   * Clamped to SCALE_MAX, SCALE_MIN
+   */
   private double scaleFactor;
 
+  /**
+   * (Re-)draws the view.
+   */
   private void draw()
   {
     // draw base floor plan
@@ -52,8 +93,13 @@ public class FloorPlan extends Canvas
     }
 
     // draw temperature text
+    // to-do
   }
 
+  /**
+   * Scales the content by a factor, clamps the scale and redraws the scene.
+   * @param factor scale (additive)
+   */
   public void scale(double factor)
   {
     this.scaleFactor += factor;
@@ -68,6 +114,11 @@ public class FloorPlan extends Canvas
     this.setHeight(1024.0 * this.scaleFactor);
   }
 
+  /**
+   * Creates a new FloorPlan object.
+   * @param path path to the folder containing map files
+   * @param data data from map.json
+   */
   public FloorPlan(String path, JSONObject data)
   {
     this.prefWidth(1024);
@@ -77,6 +128,8 @@ public class FloorPlan extends Canvas
     this.setHeight(1024);
 
     this.graphics = this.getGraphicsContext2D();
+
+    // redraw on canvas-size change
     widthProperty().addListener(e -> this.draw());
     heightProperty().addListener(e -> this.draw());
 
@@ -90,16 +143,20 @@ public class FloorPlan extends Canvas
     }
     catch (IOException e)
     {
-      Application.debug("could not load image from path " + path + "\\" + data.get("diffuse").toString());
+      // uh oh, seems like some data is corrupted and we couldn't load our map...
+      Application.debug("could not load image from path " + path + "\\" + data.get("diffuse").toString(), Level.WARNING);
 
       Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Error");
       alert.setHeaderText("Could not load Floor Plan Image");
       alert.setContentText("cannot load image from \'" + path + "\\" + data.get("diffuse").toString() + "\'\nValidate your files or try again with a different map.");
       alert.showAndWait();
+
+      return;
     }
 
     this.scale(1.25);
+    this.draw();
     this.setVisible(true);
   }
 }

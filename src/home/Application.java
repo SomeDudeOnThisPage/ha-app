@@ -14,23 +14,40 @@ import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 
+/**
+ * "do some javadoc here you lazy shit" - me to myself.
+ *
+ * @author Robin Buhlmann
+ * @author Maximilian Morlock (oder wie auch immer man deinen Nachnamen schreibt...)
+ *
+ * @version 0.1
+ * @since 2019-11-18
+ */
 public class Application extends javafx.application.Application
 {
+  /** Debug flag. */
   private static boolean DEBUG = false;
+
+  /** Log flag. */
   private static boolean LOG = true;
+
+  /** Program arguments. */
   private static String[] args;
 
+  /** Root stage. */
   public static Stage STAGE;
+
+  /** Default program title. */
   public static final String TITLE = "ZigBee Home Automation";
 
+  /** Logger. */
   private static Logger logger;
 
-  /**
-   * The current model the application is using.
-   */
+  /** The current model the application is using. */
   private static House model;
 
   /**
@@ -49,11 +66,20 @@ public class Application extends javafx.application.Application
     }
   }
 
+  /**
+   * Returns the current model (or null if none is loaded).
+   * @return model
+   */
   public static synchronized House getModel()
   {
     return Application.model;
   }
 
+  /**
+   * Prints debug messages if the '-debug'-parameter is set, and logs them if '-nolog' has not been set.
+   * @param message message (should be serializable, so ideally use a String...)
+   * @param level severity for logging
+   */
   public static void debug(Object message, Level level)
   {
     if (Application.DEBUG)
@@ -67,15 +93,29 @@ public class Application extends javafx.application.Application
     }
   }
 
+  /**
+   * Prints debug messages if the '-debug'-parameter is set, and logs them if '-nolog' has not been set.
+   * Uses Level.INFO to log by default.
+   * @param message message (should be serializable, so ideally use a String...)
+   */
   public static void debug(Object message)
   {
     Application.debug(message, Level.INFO);
   }
 
+  /**
+   * Starts the JavaFX Application.
+   * @param stage root stage
+   * @throws Exception some JavaFX exception that shouldn't happen
+   */
   @Override
   public void start(Stage stage) throws Exception
   {
     Application.STAGE = stage;
+
+    // stage size (magic numbers, ya can't stop me...)
+    stage.setMinWidth(800.0);
+    stage.setMinHeight(600.0);
 
     // evaluate command line parameters
     Application.cmd(Application.args);
@@ -121,8 +161,13 @@ public class Application extends javafx.application.Application
             i++;
           case "-nolog":
             Application.LOG = false;
+            continue;
+          // todo: Implement this parameter. Will be used to not require WSN-Check when port connection is established. Used for debugging when using e.g. putty
+          // case "-nocheck"
+          //   Application.NOCHECK = true
+          //   continue;
           default:
-            Application.debug("found illegal command line parameter \'" + args[i] + "\'");
+            Application.debug("found illegal command line parameter \'" + args[i] + "\'", Level.SEVERE);
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Fatal Error");
@@ -136,9 +181,17 @@ public class Application extends javafx.application.Application
     }
   }
 
+  /**
+   * Initializes a logger and launches the JavaFX application.
+   * @param args CLI parameters
+   */
   public static void main(String[] args)
   {
-    Application.logger = new Logger(new SimpleDateFormat("yyyy-MM-dd.HH-mm-ss").format(new Date()));
+    // setup logger early so we can log before / during app start!
+    if (!Arrays.asList(args).contains("-nolog"))
+    {
+      Application.logger = new Logger(new SimpleDateFormat("yyyy-MM-dd.HH-mm-ss").format(new Date()));
+    }
 
     // copy arguments so we can access them after we launched the app as we need to initialize the JavaFX application to show error alert dialogs
     Application.args = args;

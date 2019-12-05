@@ -3,13 +3,12 @@ package home.gui;
 import com.fazecast.jSerialComm.SerialPort;
 import home.Application;
 import home.io.SerialIO;
-import javafx.event.ActionEvent;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.stage.DirectoryChooser;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,7 +16,6 @@ import org.json.simple.parser.JSONParser;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -32,6 +30,7 @@ import java.util.ResourceBundle;
  *
  * @author Robin Buhlmann
  * @version 0.1
+ * @since 2019-11-20
  */
 public class MainController implements Initializable
 {
@@ -47,25 +46,30 @@ public class MainController implements Initializable
     this.menu_SelectSerialPort.getItems().clear();
 
     SerialPort[] ports = SerialIO.getPorts();
+
+    // construct menu items for all ports and append them to menu_SelectSerialPort
     for (SerialPort port : ports)
     {
       MenuItem item = new MenuItem(port.getDescriptivePortName() + " @ " + port.getSystemPortName());
       item.setUserData(port);
 
+      // set our current port on action handler
       item.setOnAction(e -> {
         Application.STAGE.setTitle(Application.TITLE + " @ " + ((SerialPort) item.getUserData()).getSystemPortName());
         SerialIO.setPort((SerialPort) item.getUserData());
       });
 
+      // add the menu item to the port list
       this.menu_SelectSerialPort.getItems().add(item);
     }
   }
 
-  /**
-   * Handler for the "Load Floor Plan" menu option under File > Load Floor Plan.
-   */
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Handlers for: menu > File
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   @FXML
-  private void menu_onLoadFloorPlan() throws Exception
+  protected void menu_onLoadFloorPlan() throws Exception
   {
     // simple JavaFX file chooser to load our map
     DirectoryChooser selector = new DirectoryChooser();
@@ -107,9 +111,26 @@ public class MainController implements Initializable
   }
 
   @FXML
-  private void menu_onRefreshPortsList()
+  protected void menu_onQuit()
+  {
+    Platform.exit();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Handlers for: menu > Connection Properties
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  @FXML
+  protected void menu_onRefreshPortsList()
   {
     // not very clean code, but our init method only populates the ports list anyway...
     this.initialize(null, null);
+  }
+
+  @FXML
+  protected void menu_onDisconnect()
+  {
+    SerialIO.cleanup();
+    Application.STAGE.setTitle(Application.TITLE + " - no port selected");
   }
 }
