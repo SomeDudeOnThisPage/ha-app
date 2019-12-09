@@ -1,5 +1,6 @@
 package home.gui;
 
+import home.Application;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ScrollEvent;
@@ -52,6 +53,8 @@ public class CanvasController implements Initializable
       // prevent event propagation
       event.consume();
     });
+
+    Application.setCanvas(this);
   }
 
   /**

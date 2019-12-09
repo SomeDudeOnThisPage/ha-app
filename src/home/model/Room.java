@@ -8,6 +8,8 @@ public class Room
   private Light[] lights;
   private Temperature temperature;
 
+  private String name;
+
   /**
    * Returns the rooms' Temperature object.
    * @see Temperature
@@ -32,6 +34,11 @@ public class Room
     return this.lights;
   }
 
+  public String getName()
+  {
+    return this.name;
+  }
+
   /**
    * A room is a collection of data, namely a list of lights and a temperature.
    * @see Temperature
@@ -53,5 +60,7 @@ public class Room
 
     this.temperature = new Temperature();
     // todo: request current temperature settings from WSN, for now just set reference and actual to zero...
+
+    this.name = (String) data.get("alt");
   }
 }

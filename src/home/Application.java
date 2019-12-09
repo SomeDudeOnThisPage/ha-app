@@ -1,5 +1,7 @@
 package home;
 
+import home.gui.CanvasController;
+import home.gui.ControlController;
 import home.io.CommunicationAPI;
 import home.io.SerialAPIListener;
 import home.io.SerialIO;
@@ -9,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
@@ -50,6 +53,12 @@ public class Application extends javafx.application.Application
   /** The current model the application is using. */
   private static House model;
 
+  /** Canvas sub-scene controller */
+  private static CanvasController canvas;
+
+  /** Control sub-scene controller */
+  private static ControlController control;
+
   /**
    * Sets the model to be used. This will trigger loading of a new model from a map.json file and a chain of requests to the WSN as values have to be reevaluated.
    * @param data JSON file containing the maps data
@@ -74,6 +83,12 @@ public class Application extends javafx.application.Application
   {
     return Application.model;
   }
+
+  public static synchronized void setCanvas(CanvasController canvas) { Application.canvas = canvas; }
+  public static synchronized void setControl(ControlController control) { Application.control = control; }
+
+  public static CanvasController canvas() { return Application.canvas; }
+  public static ControlController control() { return Application.control; }
 
   /**
    * Prints debug messages if the '-debug'-parameter is set, and logs them if '-nolog' has not been set.

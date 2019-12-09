@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox minHeight="600.0" minWidth="800.0" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.gui.MainController">
@@ -48,13 +48,15 @@
                         <fx:include fx:id="canvas" source="canvas.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
-                <AnchorPane minWidth="250.0">
-                     <children>
-                        <Accordion prefHeight="693.0" prefWidth="374.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children></AnchorPane>
+                  <AnchorPane minHeight="350.0" minWidth="350.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #FFFFFF;">
+                      <children>
+                          <fx:include fx:id="control" source="control.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                      </children>
+                  </AnchorPane>
               </items>
             </SplitPane>
          </children>
     </AnchorPane>
+      <Pane prefHeight="20.0" prefWidth="200.0" />
   </children>
 </VBox>

@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
 /**
  * This class is used to control the main application windows' elements.
  * Further, more specific functionality is outsourced to CanvasController and
- * ControllerController (great name I know) in order to keep classes small and not
+ * ControlController (great name I know) in order to keep classes small and not
  * stuff five-hundred methods for UI-Control into one class.
  * This class mostly deals with the handlers for the menu elements.
  *
@@ -34,8 +34,11 @@ import java.util.ResourceBundle;
  */
 public class MainController implements Initializable
 {
-  @FXML
-  private CanvasController canvasController;
+  // not using nested controllers anymore as we need to access them from other parts of the application.
+  // they now set themselves on initialization as static members of the Application class.
+  // as we only ever have one canvas and one control subscene, this should suffice, but it isn't the cleanest way of doing things...
+  // @FXML private CanvasController canvasController;
+  // @FXML private ControlController controlController;
 
   @FXML
   private Menu menu_SelectSerialPort;
@@ -91,8 +94,10 @@ public class MainController implements Initializable
             // load from json
             JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(file));
 
+            // update model and controllers
             Application.setModel(json);
-            this.canvasController.setView(file.getParentFile().getPath(), json);
+            Application.canvas().setView(file.getParentFile().getPath(), json);
+            Application.control().populate();
             return;
           }
         }

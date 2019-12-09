@@ -30,12 +30,10 @@ public class Logger
 
       File file = new File("logs\\" + name + ".log");
       if (!file.exists())
-      {
-        boolean ignored = file.createNewFile();
-      }
+      { file.createNewFile(); }
 
-      FileHandler handler = new FileHandler("logs\\" + name + ".log", true);
-      this.logger = java.util.logging.Logger.getLogger(name);
+      FileHandler handler = new FileHandler("logs\\" + name + ".log", 1024 * 1024, 1, true);
+      this.logger = java.util.logging.Logger.getLogger(Logger.class.getName());
       this.logger.addHandler(handler);
 
       handler.setFormatter(new SimpleFormatter());
