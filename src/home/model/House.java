@@ -4,6 +4,9 @@ import home.Application;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+/**
+ * @author Robin Buhlmann
+ */
 public class House
 {
   private Room[] rooms;

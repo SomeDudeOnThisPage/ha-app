@@ -11,6 +11,8 @@ import java.util.logging.SimpleFormatter;
 /**
  * This is the MOST basic and simple implementation of a Logger.
  * I would not use this if developing a real Application, but for this super-small-scale project it's fine...
+ *
+ * @author Robin Buhlmann
  */
 public class Logger
 {

@@ -1,5 +1,8 @@
 package home.model;
 
+/**
+ * @author Robin Buhlmann
+ */
 public class Temperature
 {
   private float reference;

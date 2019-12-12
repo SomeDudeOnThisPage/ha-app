@@ -1,5 +1,8 @@
 package home.model;
 
+/**
+ * @author Robin Buhlmann
+ */
 public class Light
 {
   public enum State { LIGHT_ON, LIGHT_OFF }

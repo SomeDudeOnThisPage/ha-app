@@ -3,6 +3,9 @@ package home.model;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+/**
+ * @author Robin Buhlmann
+ */
 public class Room
 {
   private Light[] lights;

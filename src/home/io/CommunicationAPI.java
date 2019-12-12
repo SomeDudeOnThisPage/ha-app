@@ -92,7 +92,7 @@ public class CommunicationAPI
    * @param data Received data in serialized string form
    * @see SerialIO
    */
-  public static synchronized void update(String data) throws Exception {
+  public static synchronized void update(String data) {
     Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
 
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE");}

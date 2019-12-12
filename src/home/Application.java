@@ -9,10 +9,8 @@ import home.io.SerialIO;
 import home.model.House;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 import org.json.simple.JSONObject;
 
@@ -174,7 +172,7 @@ public class Application extends javafx.application.Application
   {
     if (args != null)
     {
-      for (int i = 0; i < args.length; i++)
+      for (int i = 0; i < args.length; /* lol */ i -= -1)
       {
         switch(args[i])
         {

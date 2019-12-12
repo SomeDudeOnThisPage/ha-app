@@ -8,6 +8,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * @author Robin Buhlmann
+ */
 public class RoomControlPane extends TitledPane
 {
   private VBox content;
@@ -26,6 +29,8 @@ public class RoomControlPane extends TitledPane
       Button bt = new Button("Light #" + i);
       bt.setUserData(i);
 
+      // the button sets the light-mode to manual if it isn't on manual already and
+      // toggles the lights' status
       bt.setOnAction(e -> {
         int lightID = (int) bt.getUserData();
         Light light = Application.getModel().getRoom(roomID).getLight(lightID);
@@ -45,6 +50,9 @@ public class RoomControlPane extends TitledPane
         }
       });
 
+      // spent 10 minutes debugging why the button wasn't showing
+      // turns out I forgot to add it to our pane
+      // ...
       this.content.getChildren().add(bt);
     }
   }
