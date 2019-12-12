@@ -45,12 +45,12 @@ public class CommunicationAPI
   // die outgoing methods können direkt in der CommunicationAPI sein, auch static!
   // wichtig is nur dass die synchronized sind falls wir threading machen!
 
-  public static synchronized void setLight(int roomid, int lightid, Light.Mode status){
+  public static synchronized void setLight(int roomid, int lightid, Light.State status){
     String message = "setLight "+roomid+" "+lightid+" "+status;
     SerialIO.write(message);
   }
 
-  public static synchronized void setLightMode(int roomid, int lightid, Light.State mode){
+  public static synchronized void setLightMode(int roomid, int lightid, Light.Mode mode){
     String message = "setLightMode "+roomid+" "+lightid+" "+mode;
     SerialIO.write(message);
   }

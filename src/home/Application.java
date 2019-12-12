@@ -2,6 +2,7 @@ package home;
 
 import home.gui.CanvasController;
 import home.gui.ControlController;
+import home.gui.MainController;
 import home.io.CommunicationAPI;
 import home.io.SerialAPIListener;
 import home.io.SerialIO;
@@ -52,6 +53,9 @@ public class Application extends javafx.application.Application
 
   /** The current model the application is using. */
   private static House model;
+
+  /** Main scene controller */
+  private static MainController controller;
 
   /** Canvas sub-scene controller */
   private static CanvasController canvas;
@@ -118,6 +122,11 @@ public class Application extends javafx.application.Application
     Application.debug(message, Level.INFO);
   }
 
+  public static void status(Object message)
+  {
+    Application.controller.setStatus(message);
+  }
+
   /**
    * Starts the JavaFX Application.
    * @param stage root stage
@@ -146,12 +155,13 @@ public class Application extends javafx.application.Application
     CommunicationAPI.initialize(new SerialAPIListener());
 
     // load main program stage from FXML
-    Parent root = FXMLLoader.load(new File("resources/fxml/app.fxml").toURI().toURL());
-    stage.setTitle(Application.TITLE + " - no port selected");
+    FXMLLoader loader = new FXMLLoader(new File("resources/fxml/app.fxml").toURI().toURL());
+    Scene scene = new Scene(loader.load());
+    Application.controller = loader.getController();
 
-    Scene scene = new Scene(root);
     scene.getStylesheets().add("/stylesheets/application_default.css");
 
+    stage.setTitle(Application.TITLE + " - no port selected");
     stage.setScene(scene);
     stage.show();
   }

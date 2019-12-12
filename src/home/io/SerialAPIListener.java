@@ -53,6 +53,7 @@ public class SerialAPIListener implements APIListener
     {
       House model = this.verify(roomID, lightID);
       model.getRoom(roomID).getLight(lightID).setState(state);
+      Application.status("turned on light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
     }
     catch(Exception e)
     {
@@ -75,6 +76,7 @@ public class SerialAPIListener implements APIListener
     {
       House model = this.verify(roomID, lightID);
       model.getRoom(roomID).getLight(lightID).setMode(mode);
+      Application.status("changed mode of light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
     }
     catch(Exception e)
     {
@@ -96,6 +98,10 @@ public class SerialAPIListener implements APIListener
     {
       House model = this.verify(roomID, -1);
       model.getRoom(roomID).temperature().set(actual);
+
+      // let's not spam the status bar with temperature changes
+      //Application.status("received new temperature data in \'" + model.getRoom(roomID).getName() + "\'");
+
     }
     catch(Exception e)
     {

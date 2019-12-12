@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.stage.DirectoryChooser;
@@ -43,6 +44,9 @@ public class MainController implements Initializable
   @FXML
   private Menu menu_SelectSerialPort;
 
+  @FXML
+  private Label status;
+
   @Override
   public void initialize(URL url, ResourceBundle resources)
   {
@@ -65,6 +69,11 @@ public class MainController implements Initializable
       // add the menu item to the port list
       this.menu_SelectSerialPort.getItems().add(item);
     }
+  }
+
+  public void setStatus(Object message)
+  {
+    this.status.setText(message.toString());
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,6 +107,9 @@ public class MainController implements Initializable
             Application.setModel(json);
             Application.canvas().setView(file.getParentFile().getPath(), json);
             Application.control().populate();
+
+            Application.status("loaded model from " + directory);
+
             return;
           }
         }

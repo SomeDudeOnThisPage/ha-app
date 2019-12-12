@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -57,6 +60,14 @@
             </SplitPane>
          </children>
     </AnchorPane>
-      <Pane prefHeight="20.0" prefWidth="200.0" />
+      <Pane prefHeight="20.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="status" ellipsisString="" layoutX="6.0" prefHeight="21.0" prefWidth="698.0">
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </Label>
+            <ProgressBar layoutX="873.0" layoutY="2.0" prefWidth="200.0" progress="0.0" />
+         </children></Pane>
   </children>
 </VBox>

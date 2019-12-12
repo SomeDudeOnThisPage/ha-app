@@ -1,19 +1,14 @@
 package home.gui;
 
 import home.Application;
+import home.gui.elements.RoomControlPane;
 import home.model.Room;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
-import javafx.scene.control.TitledPane;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
 /**
  * Call me the 'Master of Class-Names'.
@@ -25,9 +20,6 @@ import java.util.logging.Level;
  */
 public class ControlController implements Initializable
 {
-  /** URL for our config FXML element. Initialized statically once. Done in a one-liner for convenience... */
-  private static URL element_room_config; static { try { ControlController.element_room_config = new File("resources/fxml/elements/room_config.fxml").toURI().toURL(); } catch (MalformedURLException e) { e.printStackTrace(); } }
-
   /** Accordion acting as our scene root. */
   @FXML private Accordion sroot;
 
@@ -42,19 +34,10 @@ public class ControlController implements Initializable
     // why the hell does every JavaFX object use different methods of representing their children????!?!?!?
     this.sroot.getPanes().removeAll();
 
-    for (Room room : Application.getModel().getRooms())
+    Room[] rooms = Application.getModel().getRooms();
+    for (int i = 0; i < rooms.length; i++)
     {
-      try
-      {
-        TitledPane tp = FXMLLoader.load(element_room_config);
-        tp.setText(room.getName());
-        this.sroot.getPanes().add(tp);
-      }
-      catch (IOException e)
-      {
-        Application.debug("could not load room_config.fxml", Level.SEVERE);
-        e.printStackTrace();
-      }
+      this.sroot.getPanes().add(new RoomControlPane(rooms[i], i));
     }
   }
 }

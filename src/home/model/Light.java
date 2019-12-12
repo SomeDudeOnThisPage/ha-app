@@ -11,6 +11,8 @@ public class Light
   private double[] position;
 
   public void setState(State state) { this.state = state; }
+  public Light.State getState() { return this.state; }
+
   public void setMode(Mode mode) { this.mode = mode; }
   public Mode getMode() { return this.mode; }
 
