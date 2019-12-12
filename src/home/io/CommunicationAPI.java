@@ -6,6 +6,8 @@ import home.model.Light;
 import home.model.Temperature;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import java.util.Timer;
+import java.util.TimerTask;
 
 // So mein Schadz ich hab mal die funktionalität der API schemenhaft implementiert dass ich damit schonmal arbeiten kann
 // hab versucht alles verständlich zu dokumentieren, schau dir einfach den zusammenhang von CommunicationAPI, APIListener und
@@ -61,6 +63,30 @@ public class CommunicationAPI
   }
 
   public static synchronized void deviceStatus(){}
+
+  public static synchronized void initWSN(String message){
+    final int[] count = {5};
+    Timer timer = new Timer();
+    TimerTask countdown = new TimerTask(){
+      @Override
+      public void run(){
+        if (count[0] > 0)
+          count[0]--;
+        if (count[0] == 0)
+          Application.debug("NO WSN FOUND");
+      }
+    };
+
+    switch (message){
+      case "HELLO WSN":
+        SerialIO.write("HELLO WSN");
+        timer.schedule(countdown,0, 1000);
+      case "HELLO APPLICATION":
+        countdown.cancel();
+        Application.debug("HELLO APPLICATION");
+    }
+
+  }
   /**
    * This method is called by the serial-management class when an ingoing message is received.
    * @param data Received data in serialized string form
@@ -73,56 +99,57 @@ public class CommunicationAPI
     House home = Application.getModel();
     if (home == null) { Application.debug("NO MODEL");}
 
+    String[] messageSplit = data.split("\n\r");
 
-    String[] parts = data.split(" ");
+    for (int k=0; k<messageSplit.length; k++) {
+      String[] parts = messageSplit[k].split(" ");
 
-    int roomID = Integer.parseInt(parts[1]);
+      String instruction = parts[0];
+      int roomID = Integer.parseInt(parts[1]);
+      String instructionData = parts[3];
 
-    switch(parts[0]){
-      case "LIGHTSWITCH":
-        Light.State state;
-        int lightID = Integer.parseInt(parts[2]);
+      switch (instruction) {
+        case "LIGHTSWITCH":
+          Light.State state;
+          int lightID = Integer.parseInt(parts[2]);
 
-        if (parts[3].equals("ON")){
-          state = Light.State.LIGHT_ON;
-          listener.onLightSwitch(roomID, lightID, state);
-        }
+          if (instructionData.equals("ON")) {
+            state = Light.State.LIGHT_ON;
+            listener.onLightSwitch(roomID, lightID, state);
+          } else if (instructionData.equals("OFF")) {
+            state = Light.State.LIGHT_OFF;
+            listener.onLightSwitch(roomID, lightID, state);
+          } else
+            Application.debug("NO VALID MESSAGE");
 
-        else if (parts[3].equals("OFF")) {
-          state = Light.State.LIGHT_OFF;
-          listener.onLightSwitch(roomID, lightID, state);
-        }
-        else
-          Application.debug("NO VALID MESSAGE");
+        case "LIGHTMODE":
+          Light.Mode mode;
+          int lightID2 = Integer.parseInt(parts[2]);
 
-      case "LIGHTMODE":
-        Light.Mode mode;
-        int lightID2 = Integer.parseInt(parts[2]);
+          if (instructionData.equals("AUTO")) {
+            mode = Light.Mode.MODE_AUTOMATIC;
+            listener.onLightMode(roomID, lightID2, mode);
+          } else if (instructionData.equals("MANUAL")) {
+            mode = Light.Mode.MODE_MANUAL;
+            listener.onLightMode(roomID, lightID2, mode);
+          }
+        case "TEMPERATURE":
+          float temperature = Integer.parseInt(parts[2]);
+          listener.onTemperature(roomID, temperature);
+        case "INIT":
 
-        if (parts[3].equals("AUTO")) {
-          mode = Light.Mode.MODE_AUTOMATIC;
-          listener.onLightMode(roomID, lightID2, mode);
-        }
-        else if (parts[3].equals("MANUAL")){
-          mode = Light.Mode.MODE_MANUAL;
-          listener.onLightMode(roomID, lightID2, mode);
-        }
-      case "TEMPERATURE":
-        float temperature = Integer.parseInt(parts[2]);
-        listener.onTemperature(roomID, temperature);
-      case "INIT":
-
-        //Iteration über Liste von Lichtern aus Liste von Räumen
-        //Aufruf von initHouse für jede Lampe in jedem Raum
-        Room[] rm = home.getRooms();
-        for (int i=0; i<rm.length; i++) {
-          Light[] lights = rm[i].getLights();
-            for (int j=0; j<lights.length; j++){
+          //Iteration über Liste von Lichtern aus Liste von Räumen
+          //Aufruf von initHouse für jede Lampe in jedem Raum
+          Room[] rm = home.getRooms();
+          for (int i = 0; i < rm.length; i++) {
+            Light[] lights = rm[i].getLights();
+            for (int j = 0; j < lights.length; j++) {
               listener.initHouse(rm[i], lights[j]);
-
             }
+          }
+        case "HELLO APPLICATION":
+            CommunicationAPI.initWSN(data);
         }
       }
     }
-
   }
