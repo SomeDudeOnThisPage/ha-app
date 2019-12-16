@@ -97,7 +97,7 @@ public class CommunicationAPI
   public static void update(String data) {
     Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
 
-    if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE");}
+    if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE\r\n");}
 
     String[] messageSplit = data.split("\r\n");
     System.out.println(messageSplit.length + " " + messageSplit[0]);
@@ -108,38 +108,46 @@ public class CommunicationAPI
       String instruction = parts[0];
 
       switch (instruction) {
-        case "LIGHTSWITCH":
-          /*Light.State state;
-          int lightID = Integer.parseInt(parts[2]);
+        case "lightswitch":
 
-          if (instructionData.equals("ON\r")) {
+          if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {break;}
+          int roomID = Integer.parseInt(parts[1]);
+          int lightID = Integer.parseInt(parts[2]);
+          String instruct = parts[3];
+
+          Light.State state;
+
+          if (instruct.equals("ON\r")) {
             state = Light.State.LIGHT_ON;
             listener.onLightSwitch(roomID, lightID, state);
-          } else if (instructionData.equals("OFF\r")) {
+          } else if (instruct.equals("OFF\r")) {
             state = Light.State.LIGHT_OFF;
             listener.onLightSwitch(roomID, lightID, state);
           }
           else
           {
-            Application.debug("NO VALID MESSAGE");
+            Application.debug("NO VALID MESSAGE\r\n");
           }
           break;
-*/
-        case "LIGHTMODE":
-          /*
-          Light.Mode mode;
-          int lightID2 = Integer.parseInt(parts[2]);
 
-          if (instructionData.equals("AUTO")) {
+        case "lightmode":
+          if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {break;}
+
+          int roomID2 = Integer.parseInt(parts[1]);
+          int lightID2 = Integer.parseInt(parts[2]);
+          String instructionData = parts[3];
+          Light.Mode mode;
+
+          if (instructionData.equals("AUTO\r")) {
             mode = Light.Mode.MODE_AUTOMATIC;
-            listener.onLightMode(roomID, lightID2, mode);
-          } else if (instructionData.equals("MANUAL")) {
+            listener.onLightMode(roomID2, lightID2, mode);
+          } else if (instructionData.equals("MANUAL\r")) {
             mode = Light.Mode.MODE_MANUAL;
-            listener.onLightMode(roomID, lightID2, mode);
+            listener.onLightMode(roomID2, lightID2, mode);
           }
           break;
-*/
-        case "TEMPERATURE":
+
+        case "temperature":
           if (parts.length < 3 || parts[1] == null || parts[2] == null) { break; }
           float temperature = Float.parseFloat(parts[2]);
           listener.onTemperature(Integer.parseInt(parts[1]), temperature);
