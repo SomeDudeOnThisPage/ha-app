@@ -122,7 +122,7 @@ public class Application extends javafx.application.Application
 
   public static void status(Object message)
   {
-    Application.controller.setStatus(message);
+    //Platform.runLater(() -> Application.controller.setStatus(message));
   }
 
   /**
@@ -157,7 +157,7 @@ public class Application extends javafx.application.Application
     Scene scene = new Scene(loader.load());
     Application.controller = loader.getController();
 
-    scene.getStylesheets().add("/stylesheets/application_default.css");
+    scene.getStylesheets().add("materialfx.css");
 
     stage.setTitle(Application.TITLE + " - no port selected");
     stage.setScene(scene);

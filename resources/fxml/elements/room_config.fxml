@@ -1,29 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TitledPane?>
-<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<TitledPane animated="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1">
+<TitledPane fx:id="sroot" animated="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.gui.elements.RoomControl">
   <content>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
          <children>
-            <VBox prefHeight="374.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox layoutX="-0.4000000059604645" layoutY="-0.4000000059604645" prefHeight="374.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <ToggleButton mnemonicParsing="false" text="Toggle Light" />
-                  <HBox>
-                     <children>
-                        <Label text="Temperature Reference" />
-                        <Spinner />
-                     </children>
-                  </HBox>
-                  <Label text="Temperature: xxx.xx °C" />
+                  <BorderPane minHeight="75.0">
+                     <top>
+                        <Label text="Temperature" BorderPane.alignment="TOP_LEFT">
+                           <font>
+                              <Font name="Arial" size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" />
+                           </padding>
+                        </Label>
+                     </top>
+                     <padding>
+                        <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
+                     </padding>
+                     <center>
+                        <Label text="Current Room Temperature: n/a°C" BorderPane.alignment="CENTER_LEFT">
+                           <BorderPane.margin>
+                              <Insets left="5.0" />
+                           </BorderPane.margin>
+                           <font>
+                              <Font name="Arial" size="16.0" />
+                           </font>
+                        </Label>
+                     </center>
+                  </BorderPane>
+                  <Separator prefWidth="200.0" />
+                  <BorderPane minHeight="75.0">
+                     <center>
+                        <Slider fx:id="tempRefSlider" blockIncrement="5.0" max="40.0" value="20.0" BorderPane.alignment="CENTER" />
+                     </center>
+                     <top>
+                        <Label text="Temperature Reference" BorderPane.alignment="TOP_LEFT">
+                           <font>
+                              <Font name="Arial" size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" />
+                           </padding>
+                        </Label>
+                     </top>
+                     <padding>
+                        <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
+                     </padding>
+                     <right>
+                        <Label fx:id="tempRefLabel" text="XX.X°C" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font name="Arial" size="16.0" />
+                           </font>
+                        </Label>
+                     </right>
+                  </BorderPane>
+                  <Separator prefWidth="200.0" />
+                  <BorderPane>
+                     <top>
+                        <Label text="Lights" BorderPane.alignment="TOP_LEFT">
+                           <font>
+                              <Font name="Roboto" size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" />
+                           </padding>
+                        </Label>
+                     </top>
+                     <padding>
+                        <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
+                     </padding>
+                     <center>
+                        <TabPane fx:id="lightTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
                </children>
             </VBox>
          </children></AnchorPane>
   </content>
+   <font>
+      <Font name="Arial" size="18.0" />
+   </font>
 </TitledPane>

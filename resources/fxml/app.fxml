@@ -9,65 +9,69 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
 
-<VBox minHeight="600.0" minWidth="800.0" prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.gui.MainController">
-  <children>
-    <MenuBar VBox.vgrow="NEVER">
-      <menus>
-        <Menu mnemonicParsing="false" text="File">
-          <items>
-                  <MenuItem mnemonicParsing="false" onAction="#menu_onLoadFloorPlan" text="Load Floor Plan" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences" />
-            <MenuItem mnemonicParsing="false" onAction="#menu_onQuit" text="Quit" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Connection Properties">
-               <items>
-                  <Menu fx:id="menu_SelectSerialPort" mnemonicParsing="false" text="Select Serial Port">
+<BorderPane minHeight="600.0" minWidth="800.0" prefHeight="720.0" prefWidth="1080.0" stylesheets="@../../src/materialfx.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.gui.MainController">
+ <top>
+  <MenuBar BorderPane.alignment="CENTER">
+    <menus>
+      <Menu mnemonicParsing="false" text="File">
+        <items>
+                <MenuItem mnemonicParsing="false" onAction="#menu_onLoadFloorPlan" text="Load Floor Plan" />
+          <SeparatorMenuItem mnemonicParsing="false" />
+          <MenuItem mnemonicParsing="false" text="Preferences" />
+          <MenuItem mnemonicParsing="false" onAction="#menu_onQuit" text="Quit" />
+        </items>
+      </Menu>
+      <Menu mnemonicParsing="false" text="Connection Properties">
+             <items>
+                <Menu fx:id="menu_SelectSerialPort" mnemonicParsing="false" styleClass="menuu" text="Select Serial Port">
 
-                  </Menu>
-                  <MenuItem mnemonicParsing="false" onAction="#menu_onRefreshPortsList" text="Refresh Ports List">
+          </Menu>
+                <MenuItem mnemonicParsing="false" onAction="#menu_onRefreshPortsList" text="Refresh Ports List">
 
-                  </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#menu_onDisconnect" text="Disconnect" />
-               </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About" />
-          </items>
-        </Menu>
-      </menus>
-    </MenuBar>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-         <children>
-            <SplitPane dividerPositions="0.65" layoutX="250.0" layoutY="97.0" prefHeight="375.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <items>
-                <AnchorPane minHeight="350.0" minWidth="350.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #FFFFFF;">
-                     <children>
-                        <fx:include fx:id="canvas" source="canvas.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane minHeight="350.0" minWidth="350.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #FFFFFF;">
-                      <children>
-                          <fx:include fx:id="control" source="control.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                      </children>
-                  </AnchorPane>
-              </items>
-            </SplitPane>
-         </children>
-    </AnchorPane>
-      <Pane prefHeight="20.0" prefWidth="200.0">
-         <children>
-            <Label fx:id="status" ellipsisString="" layoutX="6.0" prefHeight="21.0" prefWidth="698.0">
-               <padding>
-                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-               </padding>
-            </Label>
-            <ProgressBar layoutX="873.0" layoutY="2.0" prefWidth="200.0" progress="0.0" />
-         </children></Pane>
-  </children>
-</VBox>
+          </MenuItem>
+                <MenuItem mnemonicParsing="false" onAction="#menu_onDisconnect" text="Disconnect" />
+             </items>
+      </Menu>
+      <Menu mnemonicParsing="false" text="Help">
+        <items>
+          <MenuItem mnemonicParsing="false" text="About" />
+        </items>
+      </Menu>
+    </menus>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+  </MenuBar>
+ </top>
+ <bottom>
+    <Pane BorderPane.alignment="CENTER">
+       <children>
+          <Label fx:id="status" ellipsisString="" layoutX="6.0" prefHeight="21.0" prefWidth="698.0">
+             <padding>
+                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+             </padding>
+          </Label>
+          <ProgressBar layoutX="873.0" layoutY="2.0" prefWidth="200.0" progress="0.0" />
+       </children>
+    </Pane>
+ </bottom>
+ <center>
+    <SplitPane dividerPositions="0.65" BorderPane.alignment="CENTER">
+      <items>
+        <AnchorPane minHeight="350.0" minWidth="350.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #FFFFFF;">
+             <children>
+                <fx:include fx:id="canvas" source="canvas.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+             </children>
+          </AnchorPane>
+          <AnchorPane minHeight="350.0" minWidth="350.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #FFFFFF;">
+              <children>
+                  <fx:include fx:id="control" source="control.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children>
+          </AnchorPane>
+      </items>
+    </SplitPane>
+ </center>
+</BorderPane>

@@ -6,6 +6,8 @@ import home.model.Light;
 import home.model.Temperature;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,8 +59,8 @@ public class CommunicationAPI
     SerialIO.write(message);
   }
 
-  public static synchronized void tempReference(int roomid, Temperature temp){
-    String message = "temperatureRef"+roomid+" "+temp.get();
+  public static synchronized void tempReference(int roomid, float temp){
+    String message = "temperatureRef "+roomid+" "+temp;
     SerialIO.write(message);
   }
 
@@ -92,20 +94,19 @@ public class CommunicationAPI
    * @param data Received data in serialized string form
    * @see SerialIO
    */
-  public static synchronized void update(String data) {
+  public static void update(String data) {
     Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
 
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE");}
-    House home = Application.getModel();
-    if (home == null) { Application.debug("NO MODEL");}
 
-    String[] messageSplit = data.split("\n\r");
+    String[] messageSplit = data.split("\r\n");
+    System.out.println(messageSplit.length + " " + messageSplit[0]);
 
     for (int k=0; k<messageSplit.length; k++) {
       String[] parts = messageSplit[k].split(" ");
 
       String instruction = parts[0];
-      int roomID = Integer.parseInt(parts[1]);
+      /*int roomID = Integer.parseInt(parts[1]);
       String instructionData = parts[3];
 
       switch (instruction) {
@@ -113,14 +114,18 @@ public class CommunicationAPI
           Light.State state;
           int lightID = Integer.parseInt(parts[2]);
 
-          if (instructionData.equals("ON")) {
+          if (instructionData.equals("ON\r")) {
             state = Light.State.LIGHT_ON;
             listener.onLightSwitch(roomID, lightID, state);
-          } else if (instructionData.equals("OFF")) {
+          } else if (instructionData.equals("OFF\r")) {
             state = Light.State.LIGHT_OFF;
             listener.onLightSwitch(roomID, lightID, state);
-          } else
+          }
+          else
+          {
             Application.debug("NO VALID MESSAGE");
+          }
+          break;
 
         case "LIGHTMODE":
           Light.Mode mode;
@@ -133,23 +138,21 @@ public class CommunicationAPI
             mode = Light.Mode.MODE_MANUAL;
             listener.onLightMode(roomID, lightID2, mode);
           }
-        case "TEMPERATURE":
-          float temperature = Integer.parseInt(parts[2]);
-          listener.onTemperature(roomID, temperature);
-        case "INIT":
+          break;
 
-          //Iteration über Liste von Lichtern aus Liste von Räumen
-          //Aufruf von initHouse für jede Lampe in jedem Raum
-          Room[] rm = home.getRooms();
-          for (int i = 0; i < rm.length; i++) {
-            Light[] lights = rm[i].getLights();
-            for (int j = 0; j < lights.length; j++) {
-              listener.initHouse(rm[i], lights[j]);
-            }
-          }
+        case "TEMPERATURE":
+          float temperature = Float.parseFloat(parts[2]);
+          listener.onTemperature(roomID, temperature);
+          break;
+
         case "HELLO APPLICATION":
             CommunicationAPI.initWSN(data);
-        }
+            break;
+
+        default:
+          Application.debug("received invalid message - no instruction matches");
+          break;
+        }*/
       }
     }
   }

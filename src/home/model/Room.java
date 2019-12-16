@@ -13,12 +13,19 @@ public class Room
 
   private String name;
 
+  private int id;
+
   /**
    * Returns the rooms' Temperature object.
    * @see Temperature
    * @return temperature
    */
   public Temperature temperature() { return this.temperature; }
+
+  public int id()
+  {
+    return this.id;
+  }
 
   public Light getLight(int id)
   {
@@ -48,8 +55,10 @@ public class Room
    * @see Light
    * @param data JSON-Data to construct the room from
    */
-  public Room(JSONObject data)
+  public Room(JSONObject data, int id)
   {
+    this.id = id;
+
     // get light data from JSON
     JSONArray lights = (JSONArray) data.get("lights");
     this.lights = new Light[lights.size()];

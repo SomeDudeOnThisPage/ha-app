@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.gui.elements.LightControl">
+   <children>
+      <Label text="Status: Off - Manual">
+         <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <font>
+            <Font name="Arial" size="18.0" />
+         </font>
+      </Label>
+      <Separator prefWidth="200.0" />
+      <BorderPane>
+         <left>
+            <Label text="Toggle" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </BorderPane.margin>
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+         </left>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <right>
+            <ToggleButton fx:id="lightToggle" mnemonicParsing="false" onAction="#onLightToggle" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
+      <Separator prefWidth="200.0" />
+      <BorderPane>
+         <left>
+            <Label text="Automatic Mode" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </BorderPane.margin>
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+         </left>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <right>
+            <CheckBox mnemonicParsing="false" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
+   </children>
+</VBox>

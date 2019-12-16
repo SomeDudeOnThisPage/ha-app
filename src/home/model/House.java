@@ -49,7 +49,7 @@ public class House
     {
       JSONObject roomData = (JSONObject) rooms.get(i);
       Application.debug("creating room with data " + roomData);
-      this.rooms[i] = new Room(roomData);
+      this.rooms[i] = new Room(roomData, i);
     }
   }
 }

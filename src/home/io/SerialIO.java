@@ -5,7 +5,6 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import home.Application;
 
-import java.io.IOException;
 import java.util.logging.Level;
 
 /**
@@ -40,6 +39,11 @@ public class SerialIO
     }
 
     SerialIO.init = true;
+  }
+
+  public static boolean isSet()
+  {
+    return SerialIO.current != null;
   }
 
   /**
@@ -105,6 +109,9 @@ public class SerialIO
           CommunicationAPI.update(new String(data));
         }
       });
+
+      // enable controls in our controller again (if the user already loaded a model)
+      Application.control().disableControls(false);
     }
   }
 
@@ -138,21 +145,16 @@ public class SerialIO
     if (SerialIO.current == null || !SerialIO.current.isOpen())
     {
       Application.debug("could not write to port - no port selected or port is closed", Level.WARNING);
+
+      // let the user know they forgot to select a port
+      Application.status("could not write to port - no port selected or port is closed");
       return;
     }
 
     // jSerialComm buffers internally so there's no need for us to handle that manually
-    try
-    {
-      // write data as bytes to buffered output stream
-      SerialIO.current.getOutputStream().write(data.getBytes());
+    SerialIO.current.writeBytes(data.getBytes(), data.length());
 
-      // let's not print line breaks in debug messages
-      Application.debug("sent data packet with content \'" + data.replace("\n", "\\n").replace("\r", "\\r") + "\'");
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
+    // let's not print line breaks in debug messages
+    Application.debug("sent data packet with content \'" + data.replace("\n", "\\n").replace("\r", "\\r") + "\'");
   }
 }

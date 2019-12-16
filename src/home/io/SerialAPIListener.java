@@ -4,6 +4,7 @@ import home.Application;
 import home.model.House;
 import home.model.Light;
 import home.model.Room;
+import javafx.application.Platform;
 
 /**
  * <h1>SerialAPIListener</h1>
@@ -52,7 +53,13 @@ public class SerialAPIListener implements APIListener
     try
     {
       House model = this.verify(roomID, lightID);
+
+      // set state in model
       model.getRoom(roomID).getLight(lightID).setState(state);
+
+      // set state in controller
+      // todo
+
       Application.status("turned on light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
     }
     catch(Exception e)
@@ -75,7 +82,13 @@ public class SerialAPIListener implements APIListener
     try
     {
       House model = this.verify(roomID, lightID);
+
+      // set state in model
       model.getRoom(roomID).getLight(lightID).setMode(mode);
+
+      // set state in controller
+      // todo
+
       Application.status("changed mode of light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
     }
     catch(Exception e)
@@ -97,7 +110,15 @@ public class SerialAPIListener implements APIListener
     try
     {
       House model = this.verify(roomID, -1);
+
+      // set state in model
       model.getRoom(roomID).temperature().set(actual);
+
+      // set state in controller
+      Platform.runLater(() -> {
+        Application.control().getRoomControls(roomID).setTemperature(actual);
+        System.out.println("set temp loool " +  roomID + " " + actual);
+      });
 
       // let's not spam the status bar with temperature changes
       //Application.status("received new temperature data in \'" + model.getRoom(roomID).getName() + "\'");
