@@ -31,6 +31,11 @@ public class LightControl
     // send message to WSN
     Light light = Application.getModel().getRoom(this.roomID).getLight(this.lightID);
 
+    if (light.getMode() == Light.Mode.MODE_AUTOMATIC)
+    {
+      CommunicationAPI.setLightMode(this.roomID, this.lightID, Light.Mode.MODE_MANUAL);
+    }
+
     if (light.getState() == Light.State.LIGHT_ON)
     {
       CommunicationAPI.setLight(this.roomID, this.lightID, Light.State.LIGHT_OFF);

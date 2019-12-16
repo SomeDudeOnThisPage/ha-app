@@ -50,18 +50,22 @@ public class CommunicationAPI
   // wichtig is nur dass die synchronized sind falls wir threading machen!
 
   public static synchronized void setLight(int roomid, int lightid, Light.State status){
-    String message = "setLight "+roomid+" "+lightid+" "+status;
-    SerialIO.write(message);
+    String s = (status == Light.State.LIGHT_ON) ? "on" : "off";
+
+    String message = "light_switch "+roomid+" "+lightid+" "+s;
+    SerialIO.write(message + "\r\n");
   }
 
   public static synchronized void setLightMode(int roomid, int lightid, Light.Mode mode){
-    String message = "setLightMode "+roomid+" "+lightid+" "+mode;
-    SerialIO.write(message);
+    String s = (mode == Light.Mode.MODE_MANUAL) ? "manual" : "auto";
+
+    String message = "light_mode "+roomid+" "+lightid+" "+s;
+    SerialIO.write(message + "\r\n");
   }
 
   public static synchronized void tempReference(int roomid, float temp){
-    String message = "temperatureRef "+roomid+" "+temp;
-    SerialIO.write(message);
+    String message = "temperature_reference "+roomid+" "+temp;
+    SerialIO.write(message + "\r\n");
   }
 
   public static synchronized void deviceStatus(){}
@@ -107,7 +111,7 @@ public class CommunicationAPI
       String instruction = parts[0];
 
       switch (instruction) {
-        case "lightswitch":
+        case "light_switch":
 
           if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {break;}
           int roomID = Integer.parseInt(parts[1]);
@@ -116,10 +120,10 @@ public class CommunicationAPI
 
           Light.State state;
 
-          if (instruct.equals("ON\r")) {
+          if (instruct.equals("on\r")) {
             state = Light.State.LIGHT_ON;
             listener.onLightSwitch(roomID, lightID, state);
-          } else if (instruct.equals("OFF\r")) {
+          } else if (instruct.equals("off\r")) {
             state = Light.State.LIGHT_OFF;
             listener.onLightSwitch(roomID, lightID, state);
           }
@@ -129,7 +133,7 @@ public class CommunicationAPI
           }
           continue;
 
-        case "lightmode":
+        case "light_mode":
           if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {break;}
 
           int roomID2 = Integer.parseInt(parts[1]);
@@ -137,10 +141,10 @@ public class CommunicationAPI
           String instructionData = parts[3];
           Light.Mode mode;
 
-          if (instructionData.equals("AUTO\r")) {
+          if (instructionData.equals("auto\r")) {
             mode = Light.Mode.MODE_AUTOMATIC;
             listener.onLightMode(roomID2, lightID2, mode);
-          } else if (instructionData.equals("MANUAL\r")) {
+          } else if (instructionData.equals("manual\r")) {
             mode = Light.Mode.MODE_MANUAL;
             listener.onLightMode(roomID2, lightID2, mode);
           }
