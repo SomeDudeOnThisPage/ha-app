@@ -95,10 +95,10 @@ public class RoomControl implements Initializable
         // load fxml
         FXMLLoader loader = new FXMLLoader(new File("resources/fxml/elements/light_tab.fxml").toURI().toURL());
         tab.setContent(loader.load());
-        ((LightControl) loader.getController()).setLight(lights[i]);
+        ((LightControl) loader.getController()).setLight(this.room.id(), i);
 
         // inject room into controller
-        ((LightControl) loader.getController()).setLight(lights[i]);
+        ((LightControl) loader.getController()).setLight(this.room.id(), i);
 
         // add config panel to accordion & our list so we can access it from other systems of the application (namely the IO parts)
         this.lightControllers.add(loader.getController());

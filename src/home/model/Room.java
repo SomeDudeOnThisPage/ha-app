@@ -70,7 +70,8 @@ public class Room
       this.lights[i] = new Light((double) position.get(0), (double) position.get(1));
     }
 
-    this.temperature = new Temperature();
+    JSONArray tPosition = (JSONArray) data.get("temperature");
+    this.temperature = new Temperature(new double[] {(double) tPosition.get(0), (double) tPosition.get(1)});
     // todo: request current temperature settings from WSN, for now just set reference and actual to zero...
 
     this.name = (String) data.get("alt");

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -24,41 +23,21 @@
       </Label>
       <Separator prefWidth="200.0" />
       <BorderPane>
-         <left>
-            <Label text="Toggle" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </BorderPane.margin>
-               <font>
-                  <Font name="Arial" size="18.0" />
-               </font>
-            </Label>
-         </left>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
-         <right>
-            <ToggleButton fx:id="lightToggle" mnemonicParsing="false" onAction="#onLightToggle" BorderPane.alignment="CENTER" />
-         </right>
+         <center>
+            <Button fx:id="lightSwitchButton" minWidth="300.0" mnemonicParsing="false" onAction="#onLightToggle" text="Light Switch" BorderPane.alignment="CENTER" />
+         </center>
       </BorderPane>
       <Separator prefWidth="200.0" />
       <BorderPane>
-         <left>
-            <Label text="Automatic Mode" BorderPane.alignment="CENTER">
-               <BorderPane.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </BorderPane.margin>
-               <font>
-                  <Font name="Arial" size="18.0" />
-               </font>
-            </Label>
-         </left>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
-         <right>
-            <CheckBox mnemonicParsing="false" BorderPane.alignment="CENTER" />
-         </right>
+         <center>
+            <Button fx:id="lightModeButton" minWidth="500.0" mnemonicParsing="false" onAction="#onModeToggle" text="Mode Toggle" BorderPane.alignment="CENTER" />
+         </center>
       </BorderPane>
    </children>
 </VBox>

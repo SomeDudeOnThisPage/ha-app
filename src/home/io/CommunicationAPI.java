@@ -100,7 +100,6 @@ public class CommunicationAPI
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE\r\n");}
 
     String[] messageSplit = data.split("\r\n");
-    System.out.println(messageSplit.length + " " + messageSplit[0]);
 
     for (int k=0; k<messageSplit.length; k++) {
       String[] parts = messageSplit[k].split(" ");
@@ -128,7 +127,7 @@ public class CommunicationAPI
           {
             Application.debug("NO VALID MESSAGE\r\n");
           }
-          break;
+          continue;
 
         case "lightmode":
           if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {break;}
@@ -145,13 +144,13 @@ public class CommunicationAPI
             mode = Light.Mode.MODE_MANUAL;
             listener.onLightMode(roomID2, lightID2, mode);
           }
-          break;
+          continue;
 
         case "temperature":
           if (parts.length < 3 || parts[1] == null || parts[2] == null) { break; }
           float temperature = Float.parseFloat(parts[2]);
           listener.onTemperature(Integer.parseInt(parts[1]), temperature);
-          break;
+          continue;
 
         case "HELLO APPLICATION":
           /*CommunicationAPI.initWSN(data);
@@ -159,8 +158,9 @@ public class CommunicationAPI
 
         default:
           Application.debug("received invalid message - no instruction matches");
-          break;
         }
       }
+
+    Application.canvas().getView().draw();
     }
   }

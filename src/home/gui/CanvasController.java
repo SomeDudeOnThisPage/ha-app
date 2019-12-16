@@ -67,4 +67,9 @@ public class CanvasController implements Initializable
     this.view = new FloorPlan(path, data);
     sroot.setContent(this.view);
   }
+
+  public FloorPlan getView()
+  {
+    return this.view;
+  }
 }

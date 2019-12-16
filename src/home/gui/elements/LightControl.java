@@ -1,11 +1,10 @@
 package home.gui.elements;
 
+import home.Application;
+import home.io.CommunicationAPI;
+import home.model.House;
 import home.model.Light;
 import javafx.fxml.FXML;
-import javafx.scene.control.ToggleButton;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Controller for the light config element.
@@ -13,45 +12,48 @@ import java.util.TimerTask;
  */
 public class LightControl
 {
-  private Light light;
+  private int lightID;
+  private int roomID;
 
-  private Timer cancelLightToggleResetTimer;
-
-  @FXML
-  protected ToggleButton lightToggle;
-
-  public void setLight(Light light)
+  public void setLight(int room, int light)
   {
-    this.light = light;
+    this.roomID = room;
+    this.lightID = light;
   }
 
   public void cancelLightToggleResetTimer()
   {
-    if (this.cancelLightToggleResetTimer != null)
-    {
-      this.cancelLightToggleResetTimer.cancel();
-    }
   }
 
   @FXML
   public void onLightToggle()
   {
-    ToggleButton t = this.lightToggle;
-    boolean previous = !lightToggle.isSelected();
-    System.out.println(previous);
-    TimerTask timer = new TimerTask()
+    // send message to WSN
+    Light light = Application.getModel().getRoom(this.roomID).getLight(this.lightID);
+
+    if (light.getState() == Light.State.LIGHT_ON)
     {
-      @Override
-      public void run()
-      {
-        t.setDisable(false);
-        t.setSelected(previous);
-      }
-    };
+      CommunicationAPI.setLight(this.roomID, this.lightID, Light.State.LIGHT_OFF);
+    }
+    else if (light.getState() == Light.State.LIGHT_OFF)
+    {
+      CommunicationAPI.setLight(this.roomID, this.lightID, Light.State.LIGHT_ON);
+    }
+  }
 
-    this.cancelLightToggleResetTimer = new Timer("soose");
-    this.cancelLightToggleResetTimer.schedule(timer, 15000L);
+  @FXML
+  public void onModeToggle()
+  {
+    // send message to WSN
+    Light light = Application.getModel().getRoom(this.roomID).getLight(this.lightID);
 
-    this.lightToggle.setDisable(true);
+    if (light.getMode() == Light.Mode.MODE_MANUAL)
+    {
+      CommunicationAPI.setLightMode(this.roomID, this.lightID, Light.Mode.MODE_AUTOMATIC);
+    }
+    else if (light.getMode() == Light.Mode.MODE_AUTOMATIC)
+    {
+      CommunicationAPI.setLightMode(this.roomID, this.lightID, Light.Mode.MODE_MANUAL);
+    }
   }
 }

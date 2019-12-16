@@ -3,34 +3,32 @@
   "diffuse": "diffuse.png",
   "lookup": "pos_lookup.png",
   "light_diffuse": "light.png",
+  "light_diffuse_on": "light_on.png",
   "rooms": [
     {
-      "alt": "Living Room",
-      "temperature": [100.0, 200.0],
-      "lights": [
-        {
-          "position": [100.0, 50.0]
-        },
-        {
-          "position": [100.0, 50.0]
-        }
-      ]
-    },
-    {
       "alt": "Kitchen",
-      "temperature": [200.0, 200.0],
+      "temperature": [370.0, 150.0],
       "lights": [
         {
-          "position": [200.0, 50.0]
+          "position": [330.0, 250.0]
         }
       ]
     },
     {
-      "alt": "Cleaning Cupboard",
-      "temperature": [300.0, 200.0],
+      "alt": "Living Room",
+      "temperature": [110.0, 470.0],
       "lights": [
         {
-          "position": [300.0, 50.0]
+          "position": [260.0, 630.0]
+        }
+      ]
+    },
+    {
+      "alt": "Bedroom",
+      "temperature": [680.0, 460.0],
+      "lights": [
+        {
+          "position": [700.0, 650.0]
         }
       ]
     }

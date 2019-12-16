@@ -4,11 +4,13 @@ import home.Application;
 import home.model.House;
 import home.model.Light;
 import home.model.Room;
+import home.model.Temperature;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import org.json.simple.JSONObject;
 
 import javax.imageio.ImageIO;
@@ -58,6 +60,11 @@ public class FloorPlan extends Canvas
   private Image light;
 
   /**
+   * Light sprite diffuse texture if the light is on.
+   */
+  private Image light_on;
+
+  /**
    * GraphicsContext of the canvas.
    */
   private GraphicsContext graphics;
@@ -71,7 +78,7 @@ public class FloorPlan extends Canvas
   /**
    * (Re-)draws the view.
    */
-  private void draw()
+  public void draw()
   {
     // draw base floor plan
     this.graphics.clearRect(0, 0, this.getWidth(), this.getHeight());
@@ -83,12 +90,32 @@ public class FloorPlan extends Canvas
     {
       for (Room room : model.getRooms())
       {
+        int i = 0;
         for (Light light : room.getLights())
         {
           double[] v2_position = light.getPosition();
           double size = FloorPlan.LIGHT_SIZE * this.scaleFactor;
-          this.graphics.drawImage(this.light, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor, size, size);
+
+          // draw off light sprite when our light is off, on light sprite when it is on
+          // not a fancy way to do this but it works fine
+          if (light.getState() == Light.State.LIGHT_OFF)
+          {
+            this.graphics.drawImage(this.light, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor, size, size);
+          }
+          else
+          {
+            this.graphics.drawImage(this.light_on, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor, size, size);
+          }
+
+          // draw light ID
+          this.graphics.setFont(new Font("Arial", 16 * this.scaleFactor));
+          this.graphics.fillText("Light #" + i++, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor);
         }
+
+        // draw temperature text
+        Temperature temp = room.temperature();
+        double[] pos = temp.getPosition();
+        this.graphics.fillText("Temperature: " + temp.get() + " / " + temp.getReference(), pos[0] * this.scaleFactor, pos[1] * this.scaleFactor);
       }
     }
 
@@ -140,6 +167,9 @@ public class FloorPlan extends Canvas
 
       BufferedImage light = ImageIO.read(new File(path + "\\" + data.get("light_diffuse").toString()));
       this.light = SwingFXUtils.toFXImage(light, null);
+
+      BufferedImage light_on = ImageIO.read(new File(path + "\\" + data.get("light_diffuse_on").toString()));
+      this.light_on = SwingFXUtils.toFXImage(light_on, null);
     }
     catch (IOException e)
     {

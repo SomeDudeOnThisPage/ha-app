@@ -158,6 +158,7 @@ public class Application extends javafx.application.Application
     Application.controller = loader.getController();
 
     scene.getStylesheets().add("materialfx.css");
+    scene.getStylesheets().add("application_default.css");
 
     stage.setTitle(Application.TITLE + " - no port selected");
     stage.setScene(scene);
