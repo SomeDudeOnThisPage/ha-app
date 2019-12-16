@@ -47,6 +47,8 @@ public class RoomControl implements Initializable
     this.lightControllers = new ArrayList<>();
 
     // controls for the GUI temperature reference slider
+    // temperature reference is only outgoing!
+    // meaning we do not have to update our controller after setting it!
     tempRefSlider.setOnMouseReleased(e -> {
       tempRefLabel.setText(String.format("%.2f", tempRefSlider.getValue()) + "°C");
 
@@ -80,7 +82,7 @@ public class RoomControl implements Initializable
     // no need to create complex sub-scenes if we have only one light
     if (lights.length <= 1)
     {
-
+      // I should probably implement this at some point...
     }
 
     for (int i = 0; i < lights.length; i++)

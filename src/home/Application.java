@@ -122,7 +122,7 @@ public class Application extends javafx.application.Application
 
   public static void status(Object message)
   {
-    //Platform.runLater(() -> Application.controller.setStatus(message));
+    Platform.runLater(() -> Application.controller.setStatus(message));
   }
 
   /**
