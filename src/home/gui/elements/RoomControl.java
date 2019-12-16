@@ -34,6 +34,9 @@ public class RoomControl implements Initializable
   @FXML
   protected Label tempRefLabel;
 
+  @FXML
+  protected Label tempValueLabel;
+
   private Room room;
 
   private ArrayList<LightControl> lightControllers;
@@ -54,7 +57,7 @@ public class RoomControl implements Initializable
 
   public void setTemperature(float actual)
   {
-    this.tempRefLabel.setText("Current Room Temperature: " + String.format("%.2f", actual) + "°C");
+    this.tempValueLabel.setText("Current Room Temperature: " + String.format("%.2f", actual) + "°C");
   }
 
   public LightControl getLightControls(int id)

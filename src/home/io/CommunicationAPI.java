@@ -106,12 +106,10 @@ public class CommunicationAPI
       String[] parts = messageSplit[k].split(" ");
 
       String instruction = parts[0];
-      /*int roomID = Integer.parseInt(parts[1]);
-      String instructionData = parts[3];
 
       switch (instruction) {
         case "LIGHTSWITCH":
-          Light.State state;
+          /*Light.State state;
           int lightID = Integer.parseInt(parts[2]);
 
           if (instructionData.equals("ON\r")) {
@@ -126,8 +124,9 @@ public class CommunicationAPI
             Application.debug("NO VALID MESSAGE");
           }
           break;
-
+*/
         case "LIGHTMODE":
+          /*
           Light.Mode mode;
           int lightID2 = Integer.parseInt(parts[2]);
 
@@ -139,20 +138,21 @@ public class CommunicationAPI
             listener.onLightMode(roomID, lightID2, mode);
           }
           break;
-
+*/
         case "TEMPERATURE":
+          if (parts.length < 3 || parts[1] == null || parts[2] == null) { break; }
           float temperature = Float.parseFloat(parts[2]);
-          listener.onTemperature(roomID, temperature);
+          listener.onTemperature(Integer.parseInt(parts[1]), temperature);
           break;
 
         case "HELLO APPLICATION":
-            CommunicationAPI.initWSN(data);
-            break;
+          /*CommunicationAPI.initWSN(data);
+          break;*/
 
         default:
           Application.debug("received invalid message - no instruction matches");
           break;
-        }*/
+        }
       }
     }
   }

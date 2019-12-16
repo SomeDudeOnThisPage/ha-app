@@ -115,10 +115,7 @@ public class SerialAPIListener implements APIListener
       model.getRoom(roomID).temperature().set(actual);
 
       // set state in controller
-      Platform.runLater(() -> {
-        Application.control().getRoomControls(roomID).setTemperature(actual);
-        System.out.println("set temp loool " +  roomID + " " + actual);
-      });
+      Platform.runLater(() -> Application.control().getRoomControls(roomID).setTemperature(actual));
 
       // let's not spam the status bar with temperature changes
       //Application.status("received new temperature data in \'" + model.getRoom(roomID).getName() + "\'");
