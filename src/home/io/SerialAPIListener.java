@@ -139,5 +139,15 @@ public class SerialAPIListener implements APIListener
     Application.debug("[WSN]: " + message);
   }
 
+  @Override
+  public void onStart_init() {
+
+  }
+
+  @Override
+  public void onEnd_init() {
+
+  }
+
 
 }

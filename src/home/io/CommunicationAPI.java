@@ -142,6 +142,23 @@ public class CommunicationAPI
           /*CommunicationAPI.initWSN(data);
           break;*/
 
+        case "start_init":
+          if (parts.length != 1) {
+            Application.debug("not a valid operation");
+            break;
+          }
+          listener.onStart_init();
+          continue;
+
+
+        case "end_init":
+          if (parts.length != 1) {
+            Application.debug("not a valid operation");
+            break;
+          }
+          listener.onEnd_init();
+          continue;
+
         default:
           Application.debug("received invalid message - no instruction matches");
         }
