@@ -69,31 +69,7 @@ public class CommunicationAPI
     SerialIO.write(message + "\r\n");
   }
 
-  public static synchronized void deviceStatus(){}
 
-  public static synchronized void initWSN(String message){
-    final int[] count = {5};
-    Timer timer = new Timer();
-    TimerTask countdown = new TimerTask(){
-      @Override
-      public void run(){
-        if (count[0] > 0)
-          count[0]--;
-        if (count[0] == 0)
-          Application.debug("NO WSN FOUND");
-      }
-    };
-
-    switch (message){
-      case "HELLO WSN":
-        SerialIO.write("HELLO WSN");
-        timer.schedule(countdown,0, 1000);
-      case "HELLO APPLICATION":
-        countdown.cancel();
-        Application.debug("HELLO APPLICATION");
-    }
-
-  }
   /**
    * This method is called by the serial-management class when an ingoing message is received.
    * @param data Received data in serialized string form

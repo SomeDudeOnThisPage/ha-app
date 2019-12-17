@@ -139,10 +139,5 @@ public class SerialAPIListener implements APIListener
     Application.debug("[WSN]: " + message);
   }
 
-  @Override
-  public void initHouse(Room room, Light light)
-  {
-    Application.debug("Initializing: ");
-    //Room to roomID, Light to lightID???
-  }
+
 }
