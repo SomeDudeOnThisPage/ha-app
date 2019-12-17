@@ -120,10 +120,10 @@ public class CommunicationAPI
 
           Light.State state;
 
-          if (instruct.equals("on\r")) {
+          if (instruct.equals("on")) {
             state = Light.State.LIGHT_ON;
             listener.onLightSwitch(roomID, lightID, state);
-          } else if (instruct.equals("off\r")) {
+          } else if (instruct.equals("off")) {
             state = Light.State.LIGHT_OFF;
             listener.onLightSwitch(roomID, lightID, state);
           }
@@ -141,10 +141,10 @@ public class CommunicationAPI
           String instructionData = parts[3];
           Light.Mode mode;
 
-          if (instructionData.equals("auto\r")) {
+          if (instructionData.equals("auto")) {
             mode = Light.Mode.MODE_AUTOMATIC;
             listener.onLightMode(roomID2, lightID2, mode);
-          } else if (instructionData.equals("manual\r")) {
+          } else if (instructionData.equals("manual")) {
             mode = Light.Mode.MODE_MANUAL;
             listener.onLightMode(roomID2, lightID2, mode);
           }
