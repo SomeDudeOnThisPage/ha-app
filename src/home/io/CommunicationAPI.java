@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 
 // So mein Schadz ich hab mal die funktionalität der API schemenhaft implementiert dass ich damit schonmal arbeiten kann
 // hab versucht alles verständlich zu dokumentieren, schau dir einfach den zusammenhang von CommunicationAPI, APIListener und
@@ -113,7 +114,10 @@ public class CommunicationAPI
       switch (instruction) {
         case "light_switch":
 
-          if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {break;}
+          if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {
+            Application.debug("received message for method light_switch not valid", Level.WARNING);
+            break;
+          }
           int roomID = Integer.parseInt(parts[1]);
           int lightID = Integer.parseInt(parts[2]);
           String instruct = parts[3];
@@ -127,14 +131,13 @@ public class CommunicationAPI
             state = Light.State.LIGHT_OFF;
             listener.onLightSwitch(roomID, lightID, state);
           }
-          else
-          {
-            Application.debug("NO VALID MESSAGE\r\n");
-          }
           continue;
 
         case "light_mode":
-          if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {break;}
+          if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {
+            Application.debug("received message for method light_mode not valid", Level.WARNING);
+            break;
+          }
 
           int roomID2 = Integer.parseInt(parts[1]);
           int lightID2 = Integer.parseInt(parts[2]);
@@ -151,7 +154,10 @@ public class CommunicationAPI
           continue;
 
         case "temperature":
-          if (parts.length < 3 || parts[1] == null || parts[2] == null) { break; }
+          if (parts.length < 3 || parts[1] == null || parts[2] == null) {
+            Application.debug("received message for method temperature not valid", Level.WARNING);
+            break;
+          }
           float temperature = Float.parseFloat(parts[2]);
           listener.onTemperature(Integer.parseInt(parts[1]), temperature);
           continue;
