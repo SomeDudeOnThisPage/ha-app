@@ -24,6 +24,15 @@
           <MenuItem mnemonicParsing="false" onAction="#menu_onQuit" text="Quit" />
         </items>
       </Menu>
+            <Menu mnemonicParsing="false" text="Layout">
+               <items>
+                  <Menu mnemonicParsing="false" styleClass="menuu" text="New...">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#menu_onNewRoom" text="Room" />
+                    </items>
+                  </Menu>
+               </items>
+            </Menu>
       <Menu mnemonicParsing="false" text="Connection Properties">
              <items>
                 <Menu fx:id="menu_SelectSerialPort" mnemonicParsing="false" styleClass="menuu" text="Select Serial Port">

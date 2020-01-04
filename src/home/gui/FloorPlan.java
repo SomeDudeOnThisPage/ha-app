@@ -4,12 +4,12 @@ import home.Application;
 import home.model.House;
 import home.model.Light;
 import home.model.Room;
-import home.model.Temperature;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.json.simple.JSONObject;
 
@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 /**
@@ -35,6 +36,11 @@ public class FloorPlan extends Canvas
   private static final double BASE_SIZE = 1024.0;
 
   /**
+   * Base grid size in pixels.
+   */
+  private static final double BASE_GRID_SIZE = 16.0;
+
+  /**
    * Maximum scale of visual canvas content.
    */
   private static final double SCALE_MAX = 2.0;
@@ -47,12 +53,7 @@ public class FloorPlan extends Canvas
   /**
    * Base-Size of light sprites.
    */
-  private static final double LIGHT_SIZE = 128.0;
-
-  /**
-   * Floor Plan diffuse texture.
-   */
-  private Image diffuse;
+  private static final double LIGHT_SIZE = 64.0;
 
   /**
    * Light sprite diffuse texture.
@@ -63,6 +64,10 @@ public class FloorPlan extends Canvas
    * Light sprite diffuse texture if the light is on.
    */
   private Image light_on;
+
+  private int scale;
+
+  public boolean grid;
 
   /**
    * GraphicsContext of the canvas.
@@ -75,61 +80,57 @@ public class FloorPlan extends Canvas
    */
   private double scaleFactor;
 
+  private ArrayList<Integer> currentDrawablePolygon;
+
   /**
-   * (Re-)draws the view.
+   * Iterates over our grid and determines the point with the least distance to two arbitrary coordinates.
+   * Returns a numerical index of our grid node that is closest.
+   * @param x x-coordinate
+   * @param y y-coordinate
+   * @return point index
+   * @throws Exception something something no closest point found
    */
-  public void draw()
+  public int approximateNearestClickyPoint(double x, double y) throws Exception
   {
-    // draw base floor plan
-    this.graphics.clearRect(0, 0, this.getWidth(), this.getHeight());
-    this.graphics.drawImage(this.diffuse, 0.0, 0.0, FloorPlan.BASE_SIZE * this.scaleFactor, FloorPlan.BASE_SIZE * this.scaleFactor);
+    double lDist = Double.MAX_VALUE;
+    int fx = -1;
+    int fy = -1;
 
-    // draw lights
-    House model = Application.getModel();
-    if (model != null)
+    // iterate grid and find closest
+    double interval = (this.getWidth() * this.scaleFactor) / (FloorPlan.BASE_GRID_SIZE * this.scaleFactor);
+    for (double i = 1; i < this.scale + 1; i++)
     {
-      for (Room room : model.getRooms())
+      for (double j = 1; j < this.scale + 1; j++)
       {
-        int i = 0;
-        for (Light light : room.getLights())
+        // point coordinates
+        double px = i * interval;
+        double py = j * interval;
+
+        // distance formula on 2d grounds
+        double dist = Math.sqrt(Math.pow(px - x, 2) + Math.pow(py - y, 2));
+
+        // if the found distance is smaller than current, replace current
+        if (dist < lDist)
         {
-          double[] v2_position = light.getPosition();
-          double size = FloorPlan.LIGHT_SIZE * this.scaleFactor;
+          fx = (int) i;
+          fy = (int) j;
 
-          // draw off light sprite when our light is off, on light sprite when it is on
-          // not a fancy way to do this but it works fine
-          if (light.getState() == Light.State.LIGHT_OFF)
-          {
-            this.graphics.drawImage(this.light, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor, size, size);
-          }
-          else
-          {
-            this.graphics.drawImage(this.light_on, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor, size, size);
-          }
-
-          // draw light ID
-          this.graphics.setFont(new Font("Arial", 16 * this.scaleFactor));
-          this.graphics.fillText("Light #" + i++, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor);
+          lDist = dist;
         }
-
-        // draw temperature text
-        Temperature temp = room.temperature();
-        double[] pos = temp.getPosition();
-        this.graphics.fillText("Temperature: " + temp.get() + " / " + temp.getReference(), pos[0] * this.scaleFactor, pos[1] * this.scaleFactor);
       }
     }
 
-    // draw temperature text
-    // to-do
+    if (fx != -1 && fy != -1)
+    {
+      return (fx - 1) + ((fy - 1) * this.scale);
+    }
+
+    throw new Exception("no clicky point found :(");
   }
 
-  /**
-   * Scales the content by a factor, clamps the scale and redraws the scene.
-   * @param factor scale (additive)
-   */
-  public void scale(double factor)
+  public void scale(double scale)
   {
-    this.scaleFactor += factor;
+    this.scaleFactor += scale;
 
     // clamp scale to preset values
     this.scaleFactor = Math.max(FloorPlan.SCALE_MIN, Math.min(FloorPlan.SCALE_MAX, this.scaleFactor));
@@ -141,13 +142,112 @@ public class FloorPlan extends Canvas
     this.setHeight(1024.0 * this.scaleFactor);
   }
 
-  /**
-   * Creates a new FloorPlan object.
-   * @param path path to the folder containing map files
-   * @param data data from map.json
-   */
+  public void draw()
+  {
+    this.graphics.clearRect(0, 0, this.getWidth(), this.getHeight());
+
+    // grid interval used for drawing the grid and snap the room polygons to
+    double interval = (this.getWidth() * this.scaleFactor) / (FloorPlan.BASE_GRID_SIZE * this.scaleFactor);
+
+    // draw grid if we're in drawing mode or whatever...
+    if (this.grid)
+    {
+      // create a grid of map_size * map size in x/y coordinates
+      // these coords are also used to snap the polygons of the model rooms to
+      for (double i = 1; i < scale + 1; i++)
+      {
+        for (double j = 1; j < scale + 1; j++)
+        {
+          this.graphics.strokeLine(interval * i - 2.5, interval * j, interval * i + 2.5, interval * j);
+          this.graphics.strokeLine(interval * i, interval * j - 2.5, interval * i, interval * j + 2.5);
+        }
+      }
+    }
+
+    // draw model
+    House model = Application.getModel();
+
+    if (model == null) return;
+
+    // stroke room structure polygons
+    this.graphics.setLineWidth(10.0f * this.scaleFactor);
+
+    for (Room room : model.getRooms())
+    {
+      int[] points = room.getPolygonialPointStructure();
+
+      double[] px = new double[points.length];
+      double[] py = new double[points.length];
+
+      for (int i = 0; i < points.length; i++)
+      {
+        // convert numeric grid index to x/y coordinate and insert them into our polygon draw thingy
+        px[i] = (points[i] % this.scale /* add 1 cause the grid starts at 1 * interval */ + 1) * interval;
+        py[i] = Math.floor((double) points[i] / this.scale /* add 1 cause the grid starts at 1 * interval */ + 1) * interval;
+      }
+
+      // draw polygon with the points we created
+      this.graphics.strokePolygon(px, py, points.length);
+    }
+
+    // draw Lights
+    for (Room room: model.getRooms())
+    {
+      int i = 0;
+      for (Light light : room.getLights())
+      {
+        double[] v2_position = light.getPosition();
+        double size = FloorPlan.LIGHT_SIZE * this.scaleFactor;
+
+        // draw off light sprite when our light is off, on light sprite when it is on
+        // not a fancy way to do this but it works fine
+        if (light.getState() == Light.State.LIGHT_OFF)
+        {
+          this.graphics.drawImage(this.light, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor, size, size);
+        }
+        else
+        {
+          this.graphics.drawImage(this.light_on, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor, size, size);
+        }
+
+        // draw light ID
+        this.graphics.setFont(new Font("Arial", 16 * this.scaleFactor));
+        this.graphics.fillText("Light #" + i++, v2_position[0] * this.scaleFactor, v2_position[1] * this.scaleFactor);
+      }
+    }
+
+    // draw current drawing polygon
+    if (this.currentDrawablePolygon != null)
+    {
+      this.graphics.setStroke(Color.RED);
+      double[] px = new double[this.currentDrawablePolygon.size()];
+      double[] py = new double[this.currentDrawablePolygon.size()];
+
+      int i = 0;
+      for (int index : this.currentDrawablePolygon)
+      {
+        px[i] = (index % this.scale /* add 1 cause the grid starts at 1 * interval */ + 1) * interval;
+        py[i] = Math.floor((double) index / this.scale /* add 1 cause the grid starts at 1 * interval */ + 1) * interval;
+        i++;
+      }
+
+      this.graphics.strokePolygon(px, py, this.currentDrawablePolygon.size());
+    }
+
+    this.graphics.setStroke(Color.BLACK);
+    this.graphics.setLineWidth(1.0f);
+  }
+
+  public void setDrawablePolygon(ArrayList polygonIndices)
+  {
+    this.currentDrawablePolygon = polygonIndices;
+  }
+
   public FloorPlan(String path, JSONObject data)
   {
+    // debug
+    this.grid = true;
+
     this.prefWidth(1024);
     this.prefHeight(1024);
 
@@ -155,6 +255,9 @@ public class FloorPlan extends Canvas
     this.setHeight(1024);
 
     this.graphics = this.getGraphicsContext2D();
+    this.scaleFactor = 1.0;
+
+    this.scale = ((Long) data.get("map_size")).intValue();
 
     // redraw on canvas-size change
     widthProperty().addListener(e -> this.draw());
@@ -162,9 +265,6 @@ public class FloorPlan extends Canvas
 
     try
     {
-      BufferedImage diffuse = ImageIO.read(new File(path + "\\" + data.get("diffuse").toString()));
-      this.diffuse = SwingFXUtils.toFXImage(diffuse, null);
-
       BufferedImage light = ImageIO.read(new File(path + "\\" + data.get("light_diffuse").toString()));
       this.light = SwingFXUtils.toFXImage(light, null);
 
@@ -185,8 +285,23 @@ public class FloorPlan extends Canvas
       return;
     }
 
-    this.scale(1.25);
     this.draw();
-    this.setVisible(true);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

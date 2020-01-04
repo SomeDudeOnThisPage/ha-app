@@ -6,10 +6,7 @@ import home.io.SerialIO;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,6 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -131,6 +129,37 @@ public class MainController implements Initializable
   protected void menu_onQuit()
   {
     Platform.exit();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Handlers for: menu > Layout
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  @FXML
+  protected void menu_onNewRoom()
+  {
+    if (Application.getModel() != null)
+    {
+      TextInputDialog dialog = new TextInputDialog("name...");
+      dialog.setTitle("New Room");
+      dialog.setContentText("Enter the rooms' name:");
+
+      Optional<String> result = dialog.showAndWait();
+      if (result.isEmpty()) { return; }
+
+      result.ifPresent(name -> {
+        // new room with name = name...
+        Application.canvas().startDraw(result.get());
+      });
+    }
+    else
+    {
+      Alert alert = new Alert(Alert.AlertType.ERROR);
+      alert.setTitle("Error");
+      alert.setHeaderText("No Floor Plan loaded");
+      alert.setContentText("Load a Floor Plan via 'File > Load Floor Plan' or create a new one via 'File > New Floor Plan'.");
+      alert.showAndWait();
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

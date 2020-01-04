@@ -4,12 +4,14 @@ import home.Application;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+
 /**
  * @author Robin Buhlmann
  */
 public class House
 {
-  private Room[] rooms;
+  private ArrayList<Room> rooms;
 
   /**
    * Returns a room based on its' ID.
@@ -21,7 +23,7 @@ public class House
   {
     try
     {
-      return this.rooms[id];
+      return this.rooms.get(id);
     }
     catch(Exception ignored)
     {
@@ -29,9 +31,14 @@ public class House
     }
   }
 
-  public Room[] getRooms()
+  public ArrayList<Room> getRooms()
   {
     return this.rooms;
+  }
+
+  public void addRoom(Room room)
+  {
+    this.rooms.add(room);
   }
 
   /**
@@ -43,13 +50,13 @@ public class House
   {
     // create rooms
     JSONArray rooms = (JSONArray) data.get("rooms");
-    this.rooms = new Room[rooms.size()];
+    this.rooms = new ArrayList<>();
 
     for (int i = 0; i < rooms.size(); i++)
     {
       JSONObject roomData = (JSONObject) rooms.get(i);
       Application.debug("creating room with data " + roomData);
-      this.rooms[i] = new Room(roomData, i);
+      this.rooms.add(new Room(roomData, i));
     }
   }
 }

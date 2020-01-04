@@ -59,10 +59,9 @@ public class ControlController implements Initializable
 
   public void populate()
   {
-    // why the hell does every JavaFX object use different methods of representing their children????!?!?!?
-    this.sroot.getPanes().removeAll();
+    this.sroot.getPanes().clear();
 
-    Room[] rooms = Application.getModel().getRooms();
+    ArrayList<Room> rooms = Application.getModel().getRooms();
     for (Room room : rooms)
     {
       try

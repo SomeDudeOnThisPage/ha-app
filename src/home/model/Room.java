@@ -15,12 +15,19 @@ public class Room
 
   private int id;
 
+  private int[] polygonialPointStructure;
+
   /**
    * Returns the rooms' Temperature object.
    * @see Temperature
    * @return temperature
    */
   public Temperature temperature() { return this.temperature; }
+
+  public int[] getPolygonialPointStructure()
+  {
+    return this.polygonialPointStructure;
+  }
 
   public int id()
   {
@@ -49,6 +56,14 @@ public class Room
     return this.name;
   }
 
+  public Room(String name, int[] polygons)
+  {
+    this.name = name;
+    this.polygonialPointStructure = polygons;
+
+    this.lights = new Light[0];
+  }
+
   /**
    * A room is a collection of data, namely a list of lights and a temperature.
    * @see Temperature
@@ -72,7 +87,14 @@ public class Room
 
     JSONArray tPosition = (JSONArray) data.get("temperature");
     this.temperature = new Temperature(new double[] {(double) tPosition.get(0), (double) tPosition.get(1)});
-    // todo: request current temperature settings from WSN, for now just set reference and actual to zero...
+
+    // load polygon
+    JSONArray polygon = (JSONArray) data.get("polygon");
+    this.polygonialPointStructure = new int[polygon.size()];
+    for (int i = 0; i < polygon.size(); i++)
+    {
+      this.polygonialPointStructure[i] = ((Long) polygon.get(i)).intValue();
+    }
 
     this.name = (String) data.get("alt");
   }
