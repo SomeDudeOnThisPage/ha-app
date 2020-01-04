@@ -1,7 +1,10 @@
 # API Reference
 
-The API is split into ingoing and outgoing messages...\
-Max schreib hier ma kacc
+The API is split into ingoing and outgoing messages from the **Applications' Point of View**!\
+Ingoing messages are sent only from the WSN to the App, Outgoing only from the App to the WSN.\
+This means, when developing a WSN for this App, you have to be able to **receive** all **outgoing** messages, and be able to **send** all **ingoing** messages.\
+Many messages are symmetric, meaning they are both **in-** and **outgoing**!\
+Max schreib hier ma noch n bissl kacc
 
 ---
 
