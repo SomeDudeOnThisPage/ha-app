@@ -4,7 +4,21 @@ The API is split into ingoing and outgoing messages from the **Applications' Poi
 Ingoing messages are sent only from the WSN to the App, Outgoing only from the App to the WSN.\
 This means, when developing a WSN for this App, you have to be able to **receive** all **outgoing** messages, and be able to **send** all **ingoing** messages.\
 Many messages are symmetric, meaning they are both **in-** and **outgoing**!\
-Max schreib hier ma noch n bissl kacc
+For an ingoing message, the method **update (String data)** is called. Then the received String is split two times the following way:
+
+1. Split by _**\r\n**_ to achieve the availability to process
+multiple messages.
+2. Split by " " (_space_) to extract information from the String.
+
+
+Afterwards, the extracted data goes into further process.
+The procedure consists of **three** basic steps, which apply to every given String.
+
+1. Check, _which operation_ is aimed to be called through a unique name.
+2. _Verify_, whether the received message and its parts are compatible to the method.
+3. _Call_ of the actual method.
+
+The in- and outgoing methods are described in detail below.
 
 ---
 
@@ -55,3 +69,47 @@ light_mode 0 0 auto
 ````
 
 ---
+
+### temperature
+**Type:**
+Ingoing
+
+**Description:**
+The WSN tells the application the **current temperature** value
+of a specific room. <br/>
+
+| Data Field | Description | Possible Values|
+|------------|-------------|----------------|
+|<font color='#0099ff'>**int**</font> roomID | The numerical ID of the room | any <font color='#0099ff'>**int**</font>|
+|<font color='#0099ff'>**int**</font> value| the current temperature of the room in **°C**|  any <font color='#0099ff'>**float**| 
+
+##### Usage Example
+The WSN telling the App that the temperature in room **#0** is 23,5°C:
+````
+temperature 0 23.5
+````
+
+---
+###temperature_reference
+**Type:** Outgoing <br>
+
+**Description:** the Application sets a temperature reference for heating control.
+
+
+| Data Field | Description | Possible Values|
+|------------|-------------|----------------|
+|<font color='#0099ff'>**int**</font> roomID | The numerical **ID** of the room | any <font color='#0099ff'>**int**</font>|
+|<font color='#0099ff'>**int**</font> value| the reference temperature of the room in **°C**|  any <font color='#0099ff'>**float**| 
+
+#####Usage Example
+The Application tells the WSN to cool/heat the room to 21.00°C:
+````
+temperature_reference 0 21.00
+````
+---
+###start_init
+**Type:** Ingoing
+###end_init
+**Type:** Ingoing
+###init
+**Type:** Outgoing

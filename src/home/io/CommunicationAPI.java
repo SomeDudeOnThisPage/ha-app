@@ -1,15 +1,6 @@
 package home.io;
 import home.Application;
-import home.model.House;
-import home.model.Room;
 import home.model.Light;
-import home.model.Temperature;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 
 // So mein Schadz ich hab mal die funktionalität der API schemenhaft implementiert dass ich damit schonmal arbeiten kann
