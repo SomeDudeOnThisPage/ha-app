@@ -91,7 +91,7 @@ temperature 0 23.5
 
 ---
 ###temperature_reference
-**Type:** Outgoing <br>
+**Type:** In- & Outgoing <br>
 
 **Description:** the Application sets a temperature reference for heating control.
 
@@ -109,7 +109,18 @@ temperature_reference 0 21.00
 ---
 ###start_init
 **Type:** Ingoing
+
+**Description:** starts the initialization of the WSN.
+````
+start_init
+````
+---
 ###end_init
 **Type:** Ingoing
+**Description:** ends the initialization of the WSN.
+````
+end_init
+````
+---
 ###init
 **Type:** Outgoing
