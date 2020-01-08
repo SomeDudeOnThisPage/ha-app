@@ -111,7 +111,7 @@ temperature_reference 0 21.00
 ### start_init
 **Type:** In- & Outgoing
 
-**Description:** starts the initialization of the WSN. This is sent by the application once the user has loaded a model and
+**Description:** starts the initialization of the Application. This is sent by the application once the user has loaded a model and
 selected a serial port. **The WSN must respond with a symmetrical start_init packet after at least 5 seconds, or the application
 considers the connection invalid and disconnects!**\
 Once start_init has been returned, the application enters **Initialization State** during which the WSN should send
@@ -126,7 +126,7 @@ start_init
 ### end_init
 **Type:** Ingoing
 
-**Description:** ends the initialization of the WSN.
+**Description:** ends the initialization of the Application.
 
 ##### Usage Example
 The WSN signals the Application that all data has been sent.
