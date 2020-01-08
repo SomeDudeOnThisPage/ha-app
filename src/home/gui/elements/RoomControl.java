@@ -77,28 +77,21 @@ public class RoomControl implements Initializable
     this.room = room;
 
     // create light tabs
-    Light[] lights = this.room.getLights();
+    ArrayList<Light> lights = this.room.getLights();
 
-    // no need to create complex sub-scenes if we have only one light
-    if (lights.length <= 1)
-    {
-      // I should probably implement this at some point...
-    }
-
-    for (int i = 0; i < lights.length; i++)
+    for (Light light : lights)
     {
       try
       {
         // create new tab
-        Tab tab = new Tab("Light #" + i);
+        Tab tab = new Tab("Light #" + light.getID());
 
         // load fxml
         FXMLLoader loader = new FXMLLoader(new File("resources/fxml/elements/light_tab.fxml").toURI().toURL());
         tab.setContent(loader.load());
-        ((LightControl) loader.getController()).setLight(this.room.id(), i);
 
         // inject room into controller
-        ((LightControl) loader.getController()).setLight(this.room.id(), i);
+        ((LightControl) loader.getController()).setLight(this.room.id(), light.getID());
 
         // add config panel to accordion & our list so we can access it from other systems of the application (namely the IO parts)
         this.lightControllers.add(loader.getController());

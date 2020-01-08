@@ -3,19 +3,21 @@ package home.gui;
 import com.fazecast.jSerialComm.SerialPort;
 import home.Application;
 import home.io.SerialIO;
+import home.model.House;
+import home.model.Room;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.stage.DirectoryChooser;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -39,15 +41,38 @@ public class MainController implements Initializable
   // @FXML private CanvasController canvasController;
   // @FXML private ControlController controlController;
 
+  /**
+   * Loading pane set visible when we're loading.
+   */
+  @FXML
+  private BorderPane appLoader;
+
+  /**
+   * Main content pane.
+   */
+  @FXML
+  private BorderPane appContent;
+
+  /**
+   * Serial port menu option.
+   */
   @FXML
   private Menu menu_SelectSerialPort;
 
+  @FXML
+  private Menu menu_removeRoom;
+
+  /**
+   * Status label.
+   */
   @FXML
   private Label status;
 
   @Override
   public void initialize(URL url, ResourceBundle resources)
   {
+    this.appLoader.setVisible(false);
+
     this.menu_SelectSerialPort.getItems().clear();
 
     SerialPort[] ports = SerialIO.getPorts();
@@ -69,9 +94,51 @@ public class MainController implements Initializable
     }
   }
 
+  public void menu_populateRemoveRoomMenuItem(House model)
+  {
+    this.menu_removeRoom.getItems().clear();
+
+    for (Room room : model.getRooms())
+    {
+      MenuItem item =  new MenuItem("[" + room.id() + "]" + room.getName());
+      item.setUserData(room);
+
+      item.setOnAction(e -> {
+        boolean delete = DialogManager.confirm("Delete \'" + room.getName() + "\'", "Are you sure you want to delete the Room \'" + room.getName() + "\'?\nThis cannot be undone.");
+        if (delete)
+        {
+          Application.getModel().removeRoom((Room) item.getUserData());
+          this.menu_removeRoom.getItems().remove(item);
+
+          // repopulate controller!
+          Application.control().populate();
+
+          // redraw canvas!
+          Application.canvas().getView().draw();
+        }
+      });
+
+      this.menu_removeRoom.getItems().add(item);
+    }
+  }
+
+  /**
+   * Sets the status label.
+   * @param message message
+   */
   public void setStatus(Object message)
   {
     this.status.setText(message.toString());
+  }
+
+  /**
+   * Makes the loading pane visible and disables the main app content.
+   * @param loading loading
+   */
+  public void setLoading(boolean loading)
+  {
+    this.appLoader.setVisible(loading);
+    this.appContent.setDisable(loading);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,50 +146,81 @@ public class MainController implements Initializable
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   @FXML
+  protected void menu_onNewFloorPlan()
+  {
+    Pair<String, Integer> result = DialogManager.mapificator();
+
+    if (result == null)
+    {
+      return;
+    }
+
+    Application.newModel(result.getValue());
+    Application.saveModel(result.getKey());
+
+    Application.canvas().populate();
+    Application.control().populate();
+
+    // refresh room list yada yada...
+    this.menu_populateRemoveRoomMenuItem(Application.getModel());
+
+    Application.status("Created a new Floor Plan!");
+  }
+
+  @FXML
   protected void menu_onLoadFloorPlan() throws Exception
   {
     // simple JavaFX file chooser to load our map
-    DirectoryChooser selector = new DirectoryChooser();
-    selector.setTitle("Select Directory...");
+    FileChooser selector = new FileChooser();
+    selector.setTitle("Select Save File...");
     selector.setInitialDirectory(new File("resources/maps"));
-    final File directory = selector.showDialog(Application.STAGE);
 
-    if (directory != null && directory.isDirectory())
+    File map = selector.showOpenDialog(Application.STAGE);
+
+    if (map != null && !map.isDirectory())
     {
-      // validate folder to contain necessary map files
-      for (final File file : Objects.requireNonNull(directory.listFiles()))
-      {
-        if (!file.isDirectory())
-        {
-          if (file.getName().equals("map.json"))
-          {
-            Application.debug("creating new model from map \'" + file.getPath() + "\'");
+      Application.debug("creating new model from map \'" + map.getPath() + "\'");
 
-            // load from json
-            JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(file));
+      // load from json
+      JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(map));
 
-            // update model and controllers
-            Application.setModel(json);
-            Application.canvas().setView(file.getParentFile().getPath(), json);
-            Application.control().populate();
+      // update model and controllers
+      Application.loadModel(json);
+      Application.canvas().populate();
+      Application.control().populate();
 
-            Application.status("loaded model from " + directory);
+      Application.status("loaded model from " + map);
 
-            return;
-          }
-        }
-      }
+      // refresh room list yada yada...
+      this.menu_populateRemoveRoomMenuItem(Application.getModel());
 
-      // seems like we didn't find a map.json in the selected directory
-      // create error dialog
-      Application.debug("cannot load floor plan from directory \'" + directory.getPath() + "\' - no map.json file found");
-
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText("Unable to load Floor Plan");
-      alert.setContentText("Could not load floor plan from \'" + directory.getPath() + "\' - no map.json file was found.\nPlease try again with a valid directory.");
-      alert.showAndWait();
+      return;
     }
+
+    // seems like we didn't find a map.json in the selected directory
+    Application.debug("cannot load floor plan - no file or invalid file found");
+    DialogManager.error("Unable to load Floor Plan", "Could not load floor plan - no file or invalid file found\nPlease try again with a valid map file.");
+  }
+
+  @FXML
+  protected void menu_onSave()
+  {
+    if (Application.SAVE == null)
+    {
+      // no current save path, show name selection dialog (same functionality as File > Save As)
+      this.menu_onSaveAs();
+    }
+    else
+    {
+      // SAVE on current handle
+      Application.saveModel(null);
+    }
+  }
+
+  @FXML
+  protected void menu_onSaveAs()
+  {
+    // SAVE on new handle
   }
 
   @FXML
@@ -138,28 +236,81 @@ public class MainController implements Initializable
   @FXML
   protected void menu_onNewRoom()
   {
+    if (Application.canvas().isDrawing())
+    {
+      DialogManager.error("Cannot create new room", "Please finish your current drawing first");
+      return;
+    }
+
     if (Application.getModel() != null)
     {
-      TextInputDialog dialog = new TextInputDialog("name...");
-      dialog.setTitle("New Room");
-      dialog.setContentText("Enter the rooms' name:");
-
-      Optional<String> result = dialog.showAndWait();
-      if (result.isEmpty()) { return; }
-
-      result.ifPresent(name -> {
-        // new room with name = name...
-        Application.canvas().startDraw(result.get());
-      });
+      try
+      {
+        Pair<String, Pair<Integer, Boolean>> result = DialogManager.roomificator();
+        if (result != null)
+        {
+          // make ID = -1 if the room isn't managed
+          int id = (result.getValue().getValue()) ? result.getValue().getKey() : -1;
+          Application.canvas().startDraw(result.getKey(), id, result.getValue().getValue());
+        }
+      }
+      catch(Exception e)
+      {
+        DialogManager.error("Could not create room", e.getMessage());
+      }
     }
     else
     {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
-      alert.setTitle("Error");
-      alert.setHeaderText("No Floor Plan loaded");
-      alert.setContentText("Load a Floor Plan via 'File > Load Floor Plan' or create a new one via 'File > New Floor Plan'.");
-      alert.showAndWait();
+      DialogManager.error("No Floor Plan loaded", "Load a Floor Plan via 'File > Load Floor Plan' or create a new one via 'File > New Floor Plan'.");
     }
+  }
+
+  @FXML
+  protected void menu_onNewLight()
+  {
+    if (Application.canvas().isDrawing())
+    {
+      DialogManager.error("Cannot create new light", "Please finish your current drawing first");
+      return;
+    }
+
+    if (Application.getModel() != null)
+    {
+      int[] data = DialogManager.lightificator(Application.getModel());
+      if (data == null) { DialogManager.error("shit", "this should never happen..."); return; }
+
+      // draw light
+      Application.status("[SHIFT] + [LMB] to place the light. [ENTER] once you're happy with the lights' position.");
+      Application.canvas().drawLight(data[1], data[0]);
+    }
+    else
+    {
+      DialogManager.error("No Floor Plan loaded", "Load a Floor Plan via 'File > Load Floor Plan' or create a new one via 'File > New Floor Plan'.");
+    }
+  }
+
+  @FXML
+  protected void menu_onNewTemperature()
+  {
+
+  }
+
+  @FXML
+  protected void menu_onNewLabel()
+  {
+
+  }
+
+  @FXML
+  protected void menu_onRemoveRoom()
+  {
+
+  }
+
+  @FXML
+  protected void menu_onRemoveLight()
+  {
+
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

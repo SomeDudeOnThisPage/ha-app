@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TitledPane;
 
 import java.io.File;
@@ -27,9 +26,15 @@ import java.util.ResourceBundle;
  */
 public class ControlController implements Initializable
 {
-  /** Accordion acting as our scene root. */
-  @FXML private Accordion sroot;
+  /**
+   * Accordion acting as our scene root.
+   */
+  @FXML
+  private Accordion sroot;
 
+  /**
+   * List of all room control elements.
+   */
   private ArrayList<RoomControl> roomControllers;
 
   @Override
@@ -39,6 +44,11 @@ public class ControlController implements Initializable
     this.roomControllers = new ArrayList<>();
   }
 
+  /**
+   * Returns the control pane of a room by ID.
+   * @param id room ID
+   * @return control panel
+   */
   public RoomControl getRoomControls(int id)
   {
     return this.roomControllers.get(id);
@@ -57,6 +67,9 @@ public class ControlController implements Initializable
     }
   }
 
+  /**
+   * Cleans the current control panels and creates one for each room.
+   */
   public void populate()
   {
     this.sroot.getPanes().clear();
@@ -66,19 +79,22 @@ public class ControlController implements Initializable
     {
       try
       {
-        // load fxml
-        FXMLLoader loader = new FXMLLoader(new File("resources/fxml/elements/room_config.fxml").toURI().toURL());
-        TitledPane config = loader.load();
-        config.setText(room.getName());
+        if (room.isManaged())
+        {
+          // load fxml
+          FXMLLoader loader = new FXMLLoader(new File("resources/fxml/elements/room_config.fxml").toURI().toURL());
+          TitledPane config = loader.load();
+          config.setText(room.getName());
 
-        // inject room into controller
-        ((RoomControl) loader.getController()).setRoom(room);
+          // inject room into controller
+          ((RoomControl) loader.getController()).setRoom(room);
 
-        // save room controller so we can access it
-        this.roomControllers.add(loader.getController());
+          // SAVE room controller so we can access it
+          this.roomControllers.add(loader.getController());
 
-        // add config panel to accordion
-        this.sroot.getPanes().add(config);
+          // add config panel to accordion
+          this.sroot.getPanes().add(config);
+        }
       }
       catch (IOException e)
       {
@@ -93,11 +109,7 @@ public class ControlController implements Initializable
     if (!SerialIO.isSet())
     {
       // warn the user
-      Alert alert = new Alert(Alert.AlertType.INFORMATION);
-      alert.setTitle("No Port Set");
-      alert.setHeaderText("No port selected");
-      alert.setContentText("You need to select a port in order to control your home.\nPlease select a port under \'Connection Properties\' > \'Select Serial Port\'.");
-      alert.show();
+      DialogManager.info("No port selected", "You need to select a port in order to control your home.\nPlease select a port under \'Connection Properties\' > \'Select Serial Port\'.");
     }
   }
 }

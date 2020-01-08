@@ -2,6 +2,7 @@ package home.model;
 
 /**
  * @author Robin Buhlmann
+ * @since 2019-11-22
  */
 public class Temperature
 {

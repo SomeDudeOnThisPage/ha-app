@@ -90,10 +90,11 @@ temperature 0 23.5
 ````
 
 ---
-###temperature_reference
+### temperature_reference
 **Type:** In- & Outgoing <br>
 
-**Description:** the Application sets a temperature reference for heating control.
+**Description:** the Application sets a temperature reference for heating control. This message is only ingoing during the
+[**Initialization Phase**](#start_init).
 
 
 | Data Field | Description | Possible Values|
@@ -101,26 +102,31 @@ temperature 0 23.5
 |<font color='#0099ff'>**int**</font> roomID | The numerical **ID** of the room | any <font color='#0099ff'>**int**</font>|
 |<font color='#0099ff'>**int**</font> value| the reference temperature of the room in **°C**|  any <font color='#0099ff'>**float**| 
 
-#####Usage Example
-The Application tells the WSN to cool/heat the room to 21.00°C:
+##### Usage Example
+The Application tells the WSN to cool / heat the room to 21.00°C:
 ````
 temperature_reference 0 21.00
 ````
 ---
-###start_init
-**Type:** Ingoing
-
-**Description:** starts the initialization of the WSN.
+### start_init
+**Type:** In- & Outgoing
+**Description:** starts the initialization of the WSN. This is sent by the application once the user has loaded a model and
+selected a serial port. **The WSN must respond with a symmetrical start_init packet after at least 5 seconds, or the application
+considers the connection invalid and disconnects!**\
+Once start_init has been returned, the application enters **Initialization State** during which the WSN should send
+**all** available state vectors **once**. The WSN should then end the initialization with **end_init**. 
+##### Usage Example
+The Application requests the begin of the initialization phase.
 ````
 start_init
 ````
 ---
-###end_init
+### end_init
 **Type:** Ingoing
 **Description:** ends the initialization of the WSN.
+##### Usage Example
+The WSN signals the Application that all data has been sent.
 ````
 end_init
 ````
 ---
-###init
-**Type:** Outgoing

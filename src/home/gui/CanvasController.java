@@ -1,18 +1,22 @@
 package home.gui;
 
 import home.Application;
+import home.gui.elements.FloorPlan;
+import home.model.Light;
 import home.model.Room;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.StackPane;
 import org.json.simple.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * This class is used to control the functionality of the canvas subscene.
@@ -29,7 +33,14 @@ public class CanvasController implements Initializable
   /**
    * The ScrollPlane serving as our subscene-root element.
    */
+  @FXML
   public ScrollPane sroot;
+
+  /**
+   * The ScrollPlane serving as our subscene-root element.
+   */
+  @FXML
+  public StackPane croot;
 
   /**
    * FloorPlan object to display on the canvas.
@@ -39,15 +50,39 @@ public class CanvasController implements Initializable
   /**
    * I ran out of nice variable names give me a break.
    */
-  private boolean drawing;
+  private boolean drawingPolygon;
 
+  /**
+   * I ran out of nice variable names give me a break.
+   */
+  private boolean drawingLight;
+  private Light currentLight;
+
+  /**
+   * The polygon being drawn currently. Is null if we're not drawingPolygon.
+   */
   private ArrayList<Integer> drawnPolygon;
+
+  /**
+   * Idk some hack
+   */
   private String currentName;
+
+  /**
+   * Idk some hack
+   */
+  private boolean currentManaged;
+
+  /**
+   * Idk some hack
+   */
+  private int currentID;
 
   @Override
   public void initialize(URL ignored0, ResourceBundle ignored1)
   {
-    this.drawing = false;
+    this.drawingPolygon = false;
+    this.drawingLight = false;
 
     this.sroot.setPannable(true);
 
@@ -72,63 +107,158 @@ public class CanvasController implements Initializable
     Application.setCanvas(this);
   }
 
-  public void startDraw(String name)
+  public void drawLight(int id, int roomID)
   {
-    this.drawing = true;
+    this.drawingLight = true;
+    this.currentLight = new Light(id, 0, 0);
+    this.currentID = roomID;
+
+    this.view.draw();
+  }
+
+  /**
+   * Returns whether we're in 'drawingPolygon mode' or not.
+   * @return drawingPolygon
+   */
+  public boolean isDrawing()
+  {
+    return this.drawingPolygon || this.drawingLight;
+  }
+
+  /**
+   * Returns the polygon that's currently being drawn.
+   * @return polygon
+   */
+  public ArrayList<Integer> getDrawingPolygon()
+  {
+    return this.drawnPolygon;
+  }
+
+  public Light getDrawingLight()
+  {
+    return this.currentLight;
+  }
+
+  /**
+   * Tells the system to start drawing a polygon.
+   * @param name name of the room
+   */
+  public void startDraw(String name, int id, boolean managed)
+  {
+    this.drawingPolygon = true;
     this.drawnPolygon = new ArrayList<>();
     this.currentName = name;
+    this.currentID = id;
+    this.currentManaged = managed;
 
-    this.view.setDrawablePolygon(this.drawnPolygon);
+    // redraw once to show grid
+    Application.canvas().getView().draw();
 
     Application.status("Use [SHIFT] + [LMB] to draw a Room. [SHIFT] + [RMB] to undo. Add at least 3 points. Press [ENTER] to confirm. Press [SHIFT] + [ENTER] to cancel.");
   }
 
+  /**
+   * Tells the system to end drawing a polygon.
+   */
   public void endDraw()
   {
-    this.drawing = false;
+    this.drawingPolygon = false;
     this.drawnPolygon = null;
+  }
 
-    if (this.view != null)
-    {
-      this.view.setDrawablePolygon(null);
-    }
+  /**
+   * Returns the current canvas object used for rendering.
+   * @return canvas
+   */
+  public FloorPlan getView()
+  {
+    return this.view;
   }
 
   /**
    * Constructs a FloorPlan and appends the canvas to the scroll pane.
-   * @param path path to the map folder
-   * @param data contents of map.json
    */
-  public void setView(String path, JSONObject data)
+  public void populate()
   {
-    this.view = new FloorPlan(path, data);
+    croot.getChildren().clear();
+
+    this.view = new FloorPlan(Application.getModel().getSize());
     this.view.setFocusTraversable(true);
 
     this.sroot.setOnKeyPressed(e -> {
-      if (e.getCode() == KeyCode.ENTER && this.drawing)
+      if (e.getCode() == KeyCode.ENTER)
       {
-        // todo: actually create room...
-        Application.getModel().addRoom(new Room(this.currentName, /* whatever the fuck this is */ this.drawnPolygon.stream().mapToInt(i -> i).toArray()));
-        // ok so actually its just using a stream to map an Integer array to an int array. java fucking sucks man...
-        // i mean i COULD just use an Integer array in the room class but im too lazy to change it, arrest me
+        if (this.drawingPolygon)
+        {
+          if (e.isShiftDown())
+          {
+            Application.status("Cancelled drawing room.");
+            this.endDraw();
+            this.view.draw();
+            return;
+          }
 
-        // end drawing procedure
-        this.endDraw();
+          if (this.drawnPolygon.size() < 3)
+          {
+            Application.status("Cancelled drawing room.");
+            // tell the user he f'd up
+            DialogManager.info("could not create room", "You need to select at least three points by pressing [SHIFT] + [LMB] on the Viewport.\nThe room has not been created, please try again.");
+            this.endDraw();
+            this.view.draw();
+            return;
+          }
 
-        // redraw view after our room ahs been added
-        this.view.draw();
+          Application.getModel().addRoom(new Room(this.currentName, this.currentID, this.drawnPolygon, currentManaged));
 
-        // repopulate our controller controller to account for the new room...
-        Application.control().populate();
+          Application.debug("Creating room with polygon indices [" + this.drawnPolygon.stream().map(Object::toString).collect(Collectors.joining(", ")) + "]");
+
+          // end drawingPolygon procedure
+          this.endDraw();
+
+          // redraw view after our room ahs been added
+          this.view.draw();
+
+          // repopulate our controller controller to account for the new room...
+          Application.control().populate();
+
+          // repopulate our main controller to account for the new room...
+          Application.controller().menu_populateRemoveRoomMenuItem(Application.getModel());
+
+          // make a nice status :)
+          Application.status("Created \'" + this.currentName + "\'.");
+        }
+        else if (this.drawingLight)
+        {
+          try
+          {
+            // add the light to the room
+            Application.getModel().getRoom(this.currentID).addLight(this.currentLight);
+
+            // repopulate our controller controller to account for the new light...
+            Application.control().populate();
+
+            Application.status("Created a new light.");
+          }
+          catch(Exception ex)
+          {
+            Application.debug(ex.getMessage());
+            Application.status("Could not create light :(");
+          }
+
+          this.drawingLight = false;
+          this.currentLight = null;
+          this.view.draw();
+        }
       }
     });
 
+    // handle clicks for polygon drawingPolygon
     this.view.setOnMouseClicked(e -> {
-      if (this.drawing)
+      if (e.isShiftDown())
       {
-        try
+        if (this.drawingPolygon)
         {
-          if (e.isShiftDown())
+          try
           {
             if (e.getButton() == MouseButton.PRIMARY)
             {
@@ -143,19 +273,21 @@ public class CanvasController implements Initializable
 
             this.view.draw();
           }
+          catch (Exception ex)
+          {
+            Application.debug(ex.getMessage());
+          }
         }
-        catch(Exception ex)
+        else if (this.drawingLight)
         {
-          Application.debug(ex.getMessage());
+          double[] pos = this.view.translateCoordinates(e.getX(), e.getY());
+
+          this.currentLight.setPosition(pos[0], pos[1]);
+          this.view.draw();
         }
       }
     });
 
-    sroot.setContent(this.view);
-  }
-
-  public FloorPlan getView()
-  {
-    return this.view;
+    croot.getChildren().add(this.view);
   }
 }

@@ -2,7 +2,6 @@ package home.gui.elements;
 
 import home.Application;
 import home.io.CommunicationAPI;
-import home.model.House;
 import home.model.Light;
 import javafx.fxml.FXML;
 
@@ -19,10 +18,6 @@ public class LightControl
   {
     this.roomID = room;
     this.lightID = light;
-  }
-
-  public void cancelLightToggleResetTimer()
-  {
   }
 
   @FXML

@@ -57,9 +57,6 @@ public class SerialAPIListener implements APIListener
       // set state in model
       model.getRoom(roomID).getLight(lightID).setState(state);
 
-      // set state in controller
-      Platform.runLater(() -> Application.control().getRoomControls(roomID).getLightControls(lightID).cancelLightToggleResetTimer());
-
       Application.status("turned on light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
     }
     catch(Exception e)
@@ -140,13 +137,17 @@ public class SerialAPIListener implements APIListener
   }
 
   @Override
-  public void onStart_init() {
-
+  public void onStart_init()
+  {
+    Application.control().disableControls(true);
+    Application.controller().setLoading(true);
   }
 
   @Override
-  public void onEnd_init() {
-
+  public void onEnd_init()
+  {
+    Application.control().disableControls(false);
+    Application.controller().setLoading(false);
   }
 
 

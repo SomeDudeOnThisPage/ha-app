@@ -49,7 +49,7 @@
 	-fx-text-control-title-color: rgb(130.0, 130.0, 130.0);
 	-fx-text-fill: -fx-text-base-color;
 	-dark: rgb(47.0, 52.0, 57.0);
-	-fx-background-color: -dark;
+	/*-fx-background-color: -dark;*/
 	/*default font */
 	-fx-font-family: 'Roboto Medium';
 	-fx-font-size: 14.0px;

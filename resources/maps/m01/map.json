@@ -1,5 +1,5 @@
 {
-  "map_size": 10,
+  "map_size": 20,
   "diffuse": "diffuse.png",
   "lookup": "pos_lookup.png",
   "light_diffuse": "light.png",
@@ -7,30 +7,45 @@
   "rooms": [
     {
       "alt": "Kitchen",
+      "managed": 1,
+      "id": 0,
       "temperature": [370.0, 150.0],
-      "polygon": [0, 5, 35, 30],
+      "indices": [0, 140, 148, 8],
       "lights": [
         {
+          "id": 0,
           "position": [330.0, 250.0]
         }
       ]
     },
     {
+      "alt": "Hallway",
+      "managed": 0,
+      "indices": [8, 11, 211, 200, 140, 148],
+      "lights": []
+    },
+    {
       "alt": "Living Room",
-      "temperature": [110.0, 470.0],
-      "polygon": [5, 9, 39, 48, 46, 35],
+      "managed": 1,
+      "id": 1,
+      "temperature": [680.0, 460.0],
+      "indices": [211, 391, 380, 200],
       "lights": [
         {
-          "position": [260.0, 630.0]
+          "id": 0,
+          "position": [700.0, 650.0]
         }
       ]
     },
     {
       "alt": "Bedroom",
+      "managed": 1,
+      "id": 2,
       "temperature": [680.0, 460.0],
-      "polygon": [30, 33, 63, 60],
+      "indices": [11, 17, 59, 119, 157, 151],
       "lights": [
         {
+          "id": 0,
           "position": [700.0, 650.0]
         }
       ]
