@@ -5,6 +5,7 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import home.Application;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 
 /**
@@ -23,6 +24,11 @@ public class SerialIO
    * As set in usartManager.h
    */
   private static final int USART_BAUDRATE = 38400;
+
+  /**
+   * https://github.com/Fazecast/jSerialComm/issues/197
+   */
+  private static String messages = "";
 
   private static SerialPort current;
 
@@ -86,7 +92,7 @@ public class SerialIO
         @Override
         public int getListeningEvents()
         {
-          return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+          return SerialPort.LISTENING_EVENT_DATA_RECEIVED;
         }
 
         /**
@@ -96,17 +102,16 @@ public class SerialIO
         @Override
         public void serialEvent(SerialPortEvent event)
         {
-          if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE) { return; }
-          if (SerialIO.current.bytesAvailable() == 0) { return; }
+          SerialIO.messages += new String(event.getReceivedData());
 
-          // retrieve all available bytes and move them to a byte array
-          byte[] data = new byte[SerialIO.current.bytesAvailable()];
-          SerialIO.current.readBytes(data, data.length);
+          while (SerialIO.messages.contains("\r\n"))
+          {
+            String[] message = messages.split("\\r\\n", 2);
+            SerialIO.messages = (message.length > 1) ? message[1] : "";
 
-          Application.debug("received data packet with size of " + data.length + " bytes");
-
-          // cast byte[] to String and send it to the CommunicationAPI
-          CommunicationAPI.update(new String(data));
+            Application.debug("received data packet with size of " + message[0].length() + " bytes with content \'" + message[0] + "\'");
+            CommunicationAPI.update(message[0]);
+          }
         }
       });
 

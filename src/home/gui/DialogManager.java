@@ -11,6 +11,11 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.Optional;
 
+/**
+ * All this class does is provide a collection of dialogs used throughout the app.
+ * So boring I didn't even bother to comment it. Arrest me.
+ * Also the code is inefficient af.
+ */
 public class DialogManager
 {
   public static void error(String title, String content)
@@ -82,6 +87,57 @@ public class DialogManager
     Optional<Pair<String, Integer>> result = dialog.showAndWait();
 
     return result.orElse(null);
+  }
+
+  public static int temperatureficator(House model)
+  {
+    Dialog<Integer> dialog = new Dialog<>();
+    dialog.setTitle("New Temperature");
+    dialog.setContentText("Select a room to create a temperature display from:");
+
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+
+    ButtonType confirm = new ButtonType("Confirm", ButtonBar.ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(confirm, ButtonType.CANCEL);
+
+    ArrayList<String> choices = new ArrayList<>();
+
+    for (Room room : model.getRooms())
+    {
+      if (room.isManaged())
+      {
+        choices.add(room.getName());
+      }
+    }
+
+    ChoiceBox<String> rooms = new ChoiceBox<>();
+    rooms.getItems().addAll(choices);
+
+    grid.add(new Label("Room:"), 0, 0);
+    grid.add(rooms, 1, 0);
+
+    dialog.getDialogPane().setContent(grid);
+
+    dialog.setResultConverter(dialogButton -> {
+      if (dialogButton == confirm)
+      {
+        for (Room room : model.getRooms())
+        {
+          if (room.getName().equals(rooms.getValue()))
+          {
+            return room.id();
+          }
+        }
+      }
+      return null;
+    });
+
+    Optional<Integer> result = dialog.showAndWait();
+
+    return result.orElse(-1);
   }
 
   public static int[] lightificator(House model)

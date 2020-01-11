@@ -4,6 +4,7 @@ import home.Application;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -19,6 +20,8 @@ public class House
    */
   private ArrayList<Room> rooms;
 
+  private ArrayList<TextLabel> labels;
+
   /**
    * Size of the map in NxN index dimensions.
    */
@@ -27,6 +30,11 @@ public class House
   public int getSize()
   {
     return this.size;
+  }
+
+  public ArrayList<TextLabel> getLabels()
+  {
+    return this.labels;
   }
 
   /**
@@ -74,6 +82,11 @@ public class House
     this.rooms.remove(room);
   }
 
+  public void addLabel(TextLabel label)
+  {
+    this.labels.add(label);
+  }
+
   /**
    * Constructor without JSON.
    */
@@ -81,25 +94,7 @@ public class House
   {
     this.rooms = new ArrayList<>();
     this.size = size;
-  }
 
-  /**
-   * A house contains a list of Room-Objects, loaded from a JSON data file or created by UI.
-   * @see Room
-   * @param data JSONObject containing the map data
-   */
-  public House(JSONObject data)
-  {
-    this(((Long) data.get("map_size")).intValue());
-
-    // create rooms
-    JSONArray rooms = (JSONArray) data.get("rooms");
-
-    for (int i = 0; i < rooms.size(); i++)
-    {
-      JSONObject roomData = (JSONObject) rooms.get(i);
-      Application.debug("creating room with data " + roomData);
-      this.rooms.add(new Room(roomData));
-    }
+    this.labels = new ArrayList<>();
   }
 }

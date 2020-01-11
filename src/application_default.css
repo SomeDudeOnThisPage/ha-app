@@ -7,3 +7,8 @@
 {
    -fx-background-color: #FFFFFF;
 }
+
+.view-label *.text
+{
+    -fx-text-alignment: center;
+}

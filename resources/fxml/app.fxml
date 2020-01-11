@@ -55,6 +55,7 @@
                     <Menu fx:id="menu_SelectSerialPort" mnemonicParsing="false" styleClass="menuu" text="Select Serial Port">
 
               </Menu>
+                     <MenuItem mnemonicParsing="false" onAction="#menu_onInitializeModel" text="Initialize Model" />
                     <MenuItem mnemonicParsing="false" onAction="#menu_onRefreshPortsList" text="Refresh Ports List">
 
               </MenuItem>

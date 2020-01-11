@@ -6,12 +6,16 @@ import home.model.Light;
 import home.model.Room;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import org.json.simple.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,52 +41,36 @@ public class CanvasController implements Initializable
   public ScrollPane sroot;
 
   /**
-   * The ScrollPlane serving as our subscene-root element.
+   * The StackPane serving as our subscene-root element.
    */
   @FXML
   public StackPane croot;
 
   /**
-   * FloorPlan object to display on the canvas.
+   * Anchor Pane serving as a root of all interactable objects.
+   * The ObservableList of interactables the canvas is currently managing is the list of children accessed by interactables.getChildren().
+   */
+  private AnchorPane interactables;
+
+  /**
+   * FloorPlan object to display.
    */
   private FloorPlan view;
 
   /**
-   * I ran out of nice variable names give me a break.
+   * Are we in room drawing mode?
    */
-  private boolean drawingPolygon;
-
-  /**
-   * I ran out of nice variable names give me a break.
-   */
-  private boolean drawingLight;
-  private Light currentLight;
-
-  /**
-   * The polygon being drawn currently. Is null if we're not drawingPolygon.
-   */
-  private ArrayList<Integer> drawnPolygon;
+  private boolean drawing;
 
   /**
    * Idk some hack
    */
-  private String currentName;
-
-  /**
-   * Idk some hack
-   */
-  private boolean currentManaged;
-
-  /**
-   * Idk some hack
-   */
-  private int currentID;
+  private Room current;
 
   @Override
   public void initialize(URL ignored0, ResourceBundle ignored1)
   {
-    this.drawingPolygon = false;
-    this.drawingLight = false;
+    this.drawing = false;
 
     this.sroot.setPannable(true);
 
@@ -90,53 +78,86 @@ public class CanvasController implements Initializable
     this.sroot.addEventFilter(ScrollEvent.ANY, event -> {
       if (this.view != null)
       {
-        if (event.getDeltaY() > 0)
+        if (!event.isShiftDown())
         {
-          this.view.scale(0.1);
-        }
-        else
-        {
-          this.view.scale(-0.1);
+          event.consume();
+
+          if (event.getDeltaY() > 0)
+          {
+            this.view.scale(0.1);
+          }
+          else
+          {
+            this.view.scale(-0.1);
+          }
         }
       }
-
-      // prevent event propagation
-      event.consume();
     });
+
+    // context menu for the scroll pane
+    ContextMenu cmenu = new ContextMenu();
+    Menu newItem = new Menu("New...");
+    newItem.getStyleClass().add("menuu");
+
+    MenuItem newRoom = new MenuItem("Room");
+    newRoom.setOnAction(a -> Application.controller().menu_onNewRoom());
+
+    MenuItem newLight = new MenuItem("Light");
+    newLight.setOnAction(a -> Application.controller().menu_onNewLight());
+
+    MenuItem newLabel = new MenuItem("Label");
+    newLabel.setOnAction(a -> Application.controller().menu_onNewLabel());
+
+    MenuItem newTemp = new MenuItem("Temperature Display");
+    newTemp.setOnAction(a -> Application.controller().menu_onNewTemperature());
+
+    newItem.getItems().addAll(newRoom, newLight, newLabel, newTemp);
+
+    cmenu.getItems().add(newItem);
+
+    this.sroot.setOnContextMenuRequested(e -> {
+      if (!this.isDrawing())
+      {
+        cmenu.show(this.sroot, e.getScreenX(), e.getScreenY());
+      }
+    });
+    this.sroot.setOnMouseClicked(e -> cmenu.hide());
 
     Application.setCanvas(this);
   }
 
-  public void drawLight(int id, int roomID)
+  /**
+   * Adds an interactable GUI Object to the Interactables Anchor Panes' Children.
+   * @param interactable item
+   */
+  public void addInteractable(Node interactable)
   {
-    this.drawingLight = true;
-    this.currentLight = new Light(id, 0, 0);
-    this.currentID = roomID;
+    this.interactables.getChildren().add(interactable);
+    this.view.draw();
+  }
 
+  public void removeInteractable(Node interactable)
+  {
+    this.interactables.getChildren().remove(interactable);
     this.view.draw();
   }
 
   /**
-   * Returns whether we're in 'drawingPolygon mode' or not.
-   * @return drawingPolygon
+   * Returns whether we're in 'drawing mode' or not.
+   * @return drawing
    */
   public boolean isDrawing()
   {
-    return this.drawingPolygon || this.drawingLight;
+    return this.drawing;
   }
 
   /**
    * Returns the polygon that's currently being drawn.
    * @return polygon
    */
-  public ArrayList<Integer> getDrawingPolygon()
+  public ArrayList<Integer> getDrawing()
   {
-    return this.drawnPolygon;
-  }
-
-  public Light getDrawingLight()
-  {
-    return this.currentLight;
+    return this.current.getIndices();
   }
 
   /**
@@ -145,11 +166,8 @@ public class CanvasController implements Initializable
    */
   public void startDraw(String name, int id, boolean managed)
   {
-    this.drawingPolygon = true;
-    this.drawnPolygon = new ArrayList<>();
-    this.currentName = name;
-    this.currentID = id;
-    this.currentManaged = managed;
+    this.drawing = true;
+    this.current = new Room(name, id, new ArrayList<>(), managed);
 
     // redraw once to show grid
     Application.canvas().getView().draw();
@@ -162,8 +180,9 @@ public class CanvasController implements Initializable
    */
   public void endDraw()
   {
-    this.drawingPolygon = false;
-    this.drawnPolygon = null;
+    this.drawing = false;
+    this.current = null;
+    this.view.draw();
   }
 
   /**
@@ -180,114 +199,84 @@ public class CanvasController implements Initializable
    */
   public void populate()
   {
-    croot.getChildren().clear();
+    // (re-) initialize
+    this.initialize(null, null);
 
-    this.view = new FloorPlan(Application.getModel().getSize());
+    this.croot.getChildren().clear();
+
+    this.interactables = new AnchorPane();
+    this.interactables.setPickOnBounds(false); // make transparent to mouse clicks so we can click the canvas for room draw events
+
+    this.view = new FloorPlan(Application.getModel().getSize(), this.interactables);
     this.view.setFocusTraversable(true);
 
     this.sroot.setOnKeyPressed(e -> {
       if (e.getCode() == KeyCode.ENTER)
       {
-        if (this.drawingPolygon)
+        if (this.drawing)
         {
           if (e.isShiftDown())
           {
             Application.status("Cancelled drawing room.");
             this.endDraw();
-            this.view.draw();
             return;
           }
 
-          if (this.drawnPolygon.size() < 3)
+          if (this.current.getIndices().size() < 3)
           {
             Application.status("Cancelled drawing room.");
-            // tell the user he f'd up
             DialogManager.info("could not create room", "You need to select at least three points by pressing [SHIFT] + [LMB] on the Viewport.\nThe room has not been created, please try again.");
-            this.endDraw();
-            this.view.draw();
-            return;
           }
-
-          Application.getModel().addRoom(new Room(this.currentName, this.currentID, this.drawnPolygon, currentManaged));
-
-          Application.debug("Creating room with polygon indices [" + this.drawnPolygon.stream().map(Object::toString).collect(Collectors.joining(", ")) + "]");
-
-          // end drawingPolygon procedure
-          this.endDraw();
-
-          // redraw view after our room ahs been added
-          this.view.draw();
-
-          // repopulate our controller controller to account for the new room...
-          Application.control().populate();
-
-          // repopulate our main controller to account for the new room...
-          Application.controller().menu_populateRemoveRoomMenuItem(Application.getModel());
-
-          // make a nice status :)
-          Application.status("Created \'" + this.currentName + "\'.");
-        }
-        else if (this.drawingLight)
-        {
-          try
+          else
           {
-            // add the light to the room
-            Application.getModel().getRoom(this.currentID).addLight(this.currentLight);
+            Application.debug("Creating room with polygon indices [" + this.current.getIndices().stream().map(Object::toString).collect(Collectors.joining(", ")) + "]");
 
-            // repopulate our controller controller to account for the new light...
+           Application.getModel().addRoom(this.current);
+
+            // repopulate our controller controller to account for the new room...
             Application.control().populate();
-
-            Application.status("Created a new light.");
-          }
-          catch(Exception ex)
-          {
-            Application.debug(ex.getMessage());
-            Application.status("Could not create light :(");
+            // repopulate our main controller to account for the new room...
+            Application.controller().menu_populateRemoveRoomMenuItem(Application.getModel());
+            Application.status("Created \'" + this.current.getName() + "\'.");
           }
 
-          this.drawingLight = false;
-          this.currentLight = null;
-          this.view.draw();
+          this.endDraw();
         }
       }
     });
 
-    // handle clicks for polygon drawingPolygon
     this.view.setOnMouseClicked(e -> {
       if (e.isShiftDown())
       {
-        if (this.drawingPolygon)
+        if (this.drawing)
         {
-          try
+          // handle clicks for drawing a polygon
+          if (e.getButton() == MouseButton.PRIMARY)
           {
-            if (e.getButton() == MouseButton.PRIMARY)
+            // add point
+            int index = this.view.approximateNearestClickyPoint(e.getX(), e.getY());
+            if (index >= 0)
             {
-              // add point
-              this.drawnPolygon.add(this.view.approximateNearestClickyPoint(e.getX(), e.getY()));
+              this.current.getIndices().add(index);
             }
-            else if (e.getButton() == MouseButton.SECONDARY)
-            {
-              //remove point
-              this.drawnPolygon.remove(this.drawnPolygon.size() - 1);
-            }
-
-            this.view.draw();
           }
-          catch (Exception ex)
+          else if (e.getButton() == MouseButton.SECONDARY)
           {
-            Application.debug(ex.getMessage());
+            //remove point
+            if (this.current.getIndices().size() >= 1)
+            {
+              this.current.getIndices().remove(this.current.getIndices().size() - 1);
+            }
           }
-        }
-        else if (this.drawingLight)
-        {
-          double[] pos = this.view.translateCoordinates(e.getX(), e.getY());
 
-          this.currentLight.setPosition(pos[0], pos[1]);
+          // redraw to show changes
           this.view.draw();
         }
       }
     });
 
-    croot.getChildren().add(this.view);
+    // add view and interactable root after initialization
+    this.croot.getChildren().add(this.view);
+    this.croot.getChildren().add(this.interactables);
   }
 }

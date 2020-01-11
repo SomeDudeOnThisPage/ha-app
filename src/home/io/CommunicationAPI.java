@@ -60,6 +60,12 @@ public class CommunicationAPI
     SerialIO.write(message + "\r\n");
   }
 
+  public static synchronized void init()
+  {
+    String message = "start_init";
+    SerialIO.write(message + "\r\n");
+  }
+
 
   /**
    * This method is called by the serial-management class when an ingoing message is received.
@@ -71,90 +77,89 @@ public class CommunicationAPI
 
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE\r\n");}
 
-    String[] messageSplit = data.split("\r\n");
+    String[] parts = data.split(" ");
 
-    for (int k=0; k<messageSplit.length; k++) {
-      String[] parts = messageSplit[k].split(" ");
+    String instruction = parts[0];
 
-      String instruction = parts[0];
+    switch (instruction) {
+      case "light_switch":
 
-      switch (instruction) {
-        case "light_switch":
-
-          if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {
-            Application.debug("received message for method light_switch not valid", Level.WARNING);
-            break;
-          }
-          int roomID = Integer.parseInt(parts[1]);
-          int lightID = Integer.parseInt(parts[2]);
-          String instruct = parts[3];
-
-          Light.State state;
-
-          if (instruct.equals("on")) {
-            state = Light.State.LIGHT_ON;
-            listener.onLightSwitch(roomID, lightID, state);
-          } else if (instruct.equals("off")) {
-            state = Light.State.LIGHT_OFF;
-            listener.onLightSwitch(roomID, lightID, state);
-          }
-          continue;
-
-        case "light_mode":
-          if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {
-            Application.debug("received message for method light_mode not valid", Level.WARNING);
-            break;
-          }
-
-          int roomID2 = Integer.parseInt(parts[1]);
-          int lightID2 = Integer.parseInt(parts[2]);
-          String instructionData = parts[3];
-          Light.Mode mode;
-
-          if (instructionData.equals("auto")) {
-            mode = Light.Mode.MODE_AUTOMATIC;
-            listener.onLightMode(roomID2, lightID2, mode);
-          } else if (instructionData.equals("manual")) {
-            mode = Light.Mode.MODE_MANUAL;
-            listener.onLightMode(roomID2, lightID2, mode);
-          }
-          continue;
-
-        case "temperature":
-          if (parts.length < 3 || parts[1] == null || parts[2] == null) {
-            Application.debug("received message for method temperature not valid", Level.WARNING);
-            break;
-          }
-          float temperature = Float.parseFloat(parts[2]);
-          listener.onTemperature(Integer.parseInt(parts[1]), temperature);
-          continue;
-
-        case "HELLO APPLICATION":
-          /*CommunicationAPI.initWSN(data);
-          break;*/
-
-        case "start_init":
-          if (parts.length != 1) {
-            Application.debug("not a valid operation");
-            break;
-          }
-          listener.onStart_init();
-          continue;
-
-
-        case "end_init":
-          if (parts.length != 1) {
-            Application.debug("not a valid operation");
-            break;
-          }
-          listener.onEnd_init();
-          continue;
-
-        default:
-          Application.debug("received invalid message - no instruction matches");
+        if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {
+          Application.debug("received message for method light_switch not valid", Level.WARNING);
+          break;
         }
-      }
+        int roomID = Integer.parseInt(parts[1]);
+        int lightID = Integer.parseInt(parts[2]);
+        String instruct = parts[3];
 
-    Application.canvas().getView().draw();
-    }
+        Light.State state;
+
+        if (instruct.equals("on")) {
+          state = Light.State.LIGHT_ON;
+          listener.onLightSwitch(roomID, lightID, state);
+        } else if (instruct.equals("off")) {
+          state = Light.State.LIGHT_OFF;
+          listener.onLightSwitch(roomID, lightID, state);
+        }
+        break;
+
+      case "light_mode":
+        if (parts.length < 4 || parts[1] == null || parts[2] == null || parts[3] == null) {
+          Application.debug("received message for method light_mode not valid", Level.WARNING);
+          break;
+        }
+
+        int roomID2 = Integer.parseInt(parts[1]);
+        int lightID2 = Integer.parseInt(parts[2]);
+        String instructionData = parts[3];
+        Light.Mode mode;
+
+        if (instructionData.equals("auto")) {
+          mode = Light.Mode.MODE_AUTOMATIC;
+          listener.onLightMode(roomID2, lightID2, mode);
+        } else if (instructionData.equals("manual")) {
+          mode = Light.Mode.MODE_MANUAL;
+          listener.onLightMode(roomID2, lightID2, mode);
+        }
+        break;
+
+      case "temperature":
+        if (parts.length < 3 || parts[1] == null || parts[2] == null) {
+          Application.debug("received message for method temperature not valid", Level.WARNING);
+          break;
+        }
+        float temperature = Float.parseFloat(parts[2]);
+        listener.onTemperature(Integer.parseInt(parts[1]), temperature);
+        break;
+
+      case "temperature_reference":
+        if (parts.length < 3 || parts[1] == null || parts[2] == null) {
+          Application.debug("received message for method temperature_reference not valid", Level.WARNING);
+          break;
+        }
+        float reference = Float.parseFloat(parts[2]);
+        listener.onTemperatureReference(Integer.parseInt(parts[1]), reference);
+        break;
+
+      case "start_init":
+        if (parts.length != 1) {
+          Application.debug("not a valid operation");
+          break;
+        }
+        listener.onStart_init();
+        break;
+
+      case "end_init":
+        if (parts.length != 1) {
+          Application.debug("not a valid operation");
+          break;
+        }
+        listener.onEnd_init();
+        break;
+
+      default:
+        Application.debug("received invalid message - no instruction matches");
+        break;
+      }
+   }
   }

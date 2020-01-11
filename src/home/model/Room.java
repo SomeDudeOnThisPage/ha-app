@@ -127,10 +127,17 @@ public class Room
     return this.name;
   }
 
+  public void setTemperature(Temperature temperature)
+  {
+    this.temperature = temperature;
+  }
+
   /**
-   * Constructs a new room based on a name and a set of indices.
+   * Constructs a room based on a name, an id, a set of indices and whether the room is managed or not.
    * @param name room name
+   * @param id id
    * @param indices polygon indices
+   * @param managed whether the room is managed or not
    */
   public Room(String name, int id, ArrayList<Integer> indices, boolean managed)
   {
@@ -138,46 +145,24 @@ public class Room
     this.indices = indices;
     this.managed = managed;
 
+    this.temperature = new Temperature(new double[] {0.0, 0.0}, this.name);
+
     this.id = id;
 
     this.lights = new ArrayList<>();
   }
 
   /**
-   * A room is a collection of data, namely a list of lights and a temperature.
-   * @see Temperature
-   * @see Light
-   * @param data JSON-Data to construct the room from
+   * Constructs a room based on a name, an id, a set of indices, whether it is managed or not and a list of lights.
+   * @param name name
+   * @param id id
+   * @param indices list of polygon indices
+   * @param managed whether the room is managed or not
+   * @param lights list of lights
    */
-  public Room(JSONObject data)
+  public Room(String name, int id, ArrayList<Integer> indices, boolean managed, ArrayList<Light> lights)
   {
-    // get light data from JSON
-    JSONArray lights = (JSONArray) data.get("lights");
-    this.lights = new ArrayList<>();
-
-    for (int i = 0; i < lights.size(); i++)
-    {
-      JSONObject light = (JSONObject) lights.get(i);
-      JSONArray position = ((JSONArray) light.get("position"));
-      this.lights.add(new Light(((Long) light.get("id")).intValue(), (double) position.get(0), (double) position.get(1)));
-    }
-
-    JSONArray tPosition = (JSONArray) data.get("temperature");
-    if (tPosition != null && tPosition.size() > 0)
-    {
-      this.temperature = new Temperature(new double[] {(double) tPosition.get(0), (double) tPosition.get(1)});
-    }
-
-    // load polygon
-    JSONArray polygon = (JSONArray) data.get("indices");
-    this.indices = new ArrayList<>();
-    for (Object integer : polygon)
-    {
-      this.indices.add(((Long) integer).intValue());
-    }
-
-    this.name = (String) data.get("alt");
-    this.managed = Boolean.valueOf((String) data.get("managed"));
-    this.id = (this.managed) ? ((Long) data.get("id")).intValue() : -1;
+    this(name, id, indices, managed);
+    this.lights.addAll(lights);
   }
 }

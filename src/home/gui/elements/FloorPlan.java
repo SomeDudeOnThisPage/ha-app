@@ -1,12 +1,10 @@
 package home.gui.elements;
 
 import home.Application;
-import home.model.House;
-import home.model.Light;
-import home.model.Room;
+import home.model.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
@@ -42,7 +40,9 @@ public class FloorPlan extends Canvas
   /**
    * Base-Size of light sprites.
    */
-  private static final double LIGHT_SIZE = 128.0;
+  private static final double LIGHT_SIZE = 64.0f;
+
+  private AnchorPane croot;
 
   /**
    * Current scale or whatever.
@@ -81,17 +81,6 @@ public class FloorPlan extends Canvas
   }
 
   /**
-   * Screen space (actually I think its actually NDC) coordinates to world space coordinates
-   * @param x x coord
-   * @param y y coord
-   * @return coords normalized to world space
-   */
-  public double[] translateCoordinates(double x, double y)
-  {
-    return new double[] {x / this.scaleFactor, y / this.scaleFactor};
-  }
-
-  /**
    * Draws all rooms of a model.
    * @param model model
    */
@@ -110,17 +99,19 @@ public class FloorPlan extends Canvas
    */
   private void drawLight(Light light, boolean drawID)
   {
-    double x = light.getPosition()[0];
-    double y = light.getPosition()[1];
+    light.setTranslateX(light.getPosition()[0] * this.scaleFactor);
+    light.setTranslateY(light.getPosition()[1] * this.scaleFactor);
 
-    double radius = FloorPlan.LIGHT_SIZE / 2 * this.scaleFactor;
-
-    this.graphics.strokeOval(this.scaleFactor * x - radius, this.scaleFactor * y - radius, radius, radius);
-
-    if (drawID)
+    if (light.getState() == Light.State.LIGHT_ON)
     {
-
+      light.setFill(Color.YELLOW);
     }
+    else
+    {
+      light.setFill(Color.BLACK);
+    }
+
+    light.setRadius((this.scaleFactor / 2.0f) * FloorPlan.LIGHT_SIZE / 2);
   }
 
   /**
@@ -129,6 +120,9 @@ public class FloorPlan extends Canvas
    */
   private void drawRoom(ArrayList<Integer> indices)
   {
+    // prepare line widths for polygon drawing
+    this.graphics.setLineWidth(this.scale / 2.0f * this.scaleFactor);
+
     double interval = this.getWidth() / (this.scale + 1);
 
     double[] px = new double[indices.size()];
@@ -160,6 +154,73 @@ public class FloorPlan extends Canvas
     }
   }
 
+  private void addLights(House model)
+  {
+    for (Room room: model.getRooms())
+    {
+      for (Light light : room.getLights())
+      {
+        this.croot.getChildren().add(light);
+      }
+    }
+  }
+
+  private void drawLabel(TextLabel label)
+  {
+    label.setTranslateX(label.getPosition()[0] * this.scaleFactor);
+    label.setTranslateY(label.getPosition()[1] * this.scaleFactor);
+    label.setFont(new Font("arial", this.scaleFactor * label.getSize()));
+  }
+
+  private void drawLabels(House model)
+  {
+    for (TextLabel label : model.getLabels())
+    {
+      this.drawLabel(label);
+    }
+  }
+
+  private void addLabels(House model)
+  {
+    for (TextLabel label : model.getLabels())
+    {
+      this.croot.getChildren().add(label);
+    }
+  }
+
+  private void drawTemperatures(House model)
+  {
+    for (Room room : model.getRooms())
+    {
+      if (room.isManaged())
+      {
+        Temperature t = room.temperature();
+        if (t.getPosition()[0] > 0 && t.getPosition()[1] > 0)
+        {
+          t.setTranslateX(t.getPosition()[0] * this.scaleFactor);
+          t.setTranslateY(t.getPosition()[1] * this.scaleFactor);
+
+          t.setFitWidth(64.0 * this.scaleFactor);
+          t.setFitHeight(64.0 * this.scaleFactor);
+        }
+      }
+    }
+  }
+
+  private void addTemperatures(House model)
+  {
+    for (Room room : model.getRooms())
+    {
+      if (room.isManaged())
+      {
+        if (room.temperature().getPosition()[0] > 0 && room.temperature().getPosition()[1] > 0)
+        {
+          this.croot.getChildren().add(room.temperature());
+        }
+      }
+    }
+  }
+
   /**
    * Honestly I've given up naming my methods something descriptive so <b>BASK IN THE GLORY OF 'approximateNearestClickyPoint', MORTAL!</b>
    * Iterates over our grid and determines the point with the least distance to two arbitrary coordinates.
@@ -169,7 +230,7 @@ public class FloorPlan extends Canvas
    * @return point index
    * @throws Exception something something no closest point found
    */
-  public int approximateNearestClickyPoint(double x, double y) throws Exception
+  public int approximateNearestClickyPoint(double x, double y)
   {
     double lDist = Double.MAX_VALUE;
     int fx = -1;
@@ -204,7 +265,7 @@ public class FloorPlan extends Canvas
       return (fx - 1) + ((fy - 1) * this.scale);
     }
 
-    throw new Exception("no clicky point found :(");
+    return -1;
   }
 
   /**
@@ -225,6 +286,11 @@ public class FloorPlan extends Canvas
     this.setHeight(BASE_GRID_SIZE * this.scale * this.scaleFactor);
   }
 
+  public double getScale()
+  {
+    return this.scaleFactor;
+  }
+
   /**
    * (Re-) Draws the scene.
    */
@@ -240,46 +306,26 @@ public class FloorPlan extends Canvas
     // draw grid if we're in drawing mode or whatever...
     if (Application.canvas().isDrawing()) { this.drawGrid(); }
 
-    // prepare line widths for polygon drawing
-    this.graphics.setLineWidth(this.scale / 2.0f * this.scaleFactor);
-
     // draw rooms
     this.drawRooms(model);
+
+    // draw labels
+    this.drawLabels(model);
+
+    // draw temperatures
+    this.drawTemperatures(model);
 
     // draw Lights. Do this AFTER drawing rooms should a light overlap with walls (e.g. a wall light)!
     this.drawLights(model);
 
-    // draw current drawing polygon last so it is visible over everything
     if (Application.canvas().isDrawing())
     {
-      ArrayList<Integer> polygon = Application.canvas().getDrawingPolygon();
-
+      // draw current polygon being drawn (if any)
+      ArrayList<Integer> polygon = Application.canvas().getDrawing();
       if (polygon != null)
       {
-        this.drawRoom(polygon);
-        double interval = this.getWidth() / (this.scale + 1);
-
-        // draw it in red to differentiate it from existing rooms
         this.graphics.setStroke(Color.RED);
-        double[] px = new double[polygon.size()];
-        double[] py = new double[polygon.size()];
-
-        int i = 0;
-        for (int index : polygon)
-        {
-          px[i] = (index % this.scale /* add 1 cause the grid starts at 1 * interval */ + 1) * interval;
-          py[i] = Math.floor((double) index / this.scale /* add 1 cause the grid starts at 1 * interval */ + 1) * interval;
-          i++;
-        }
-
-        this.graphics.strokePolygon(px, py, polygon.size());
-      }
-
-      Light light = Application.canvas().getDrawingLight();
-
-      if (light != null)
-      {
-        this.drawLight(light, false);
+        this.drawRoom(polygon);
       }
     }
 
@@ -292,12 +338,13 @@ public class FloorPlan extends Canvas
    * Extends Canvas.
    * @param size size of the map in grid ticks
    */
-  public FloorPlan(int size)
+  public FloorPlan(int size, AnchorPane croot)
   {
     this.graphics = this.getGraphicsContext2D();
     this.scaleFactor = 1.0;
 
     this.scale = size;
+    this.croot = croot;
 
     float s = scale * (float) BASE_GRID_SIZE;
 
@@ -308,8 +355,22 @@ public class FloorPlan extends Canvas
     this.setHeight(s);
 
     // redraw on canvas-size change
-    widthProperty().addListener(e -> this.draw());
-    heightProperty().addListener(e -> this.draw());
+    // also reset content root size so our light / label root doesn't overflow
+    widthProperty().addListener(e -> {
+      this.croot.setMaxWidth(this.getWidth());
+      this.croot.setMinWidth(this.getWidth());
+      this.draw();
+    });
+
+    heightProperty().addListener(e -> {
+      this.croot.setMaxHeight(this.getHeight());
+      this.croot.setMinHeight(this.getHeight());
+      this.draw();
+    });
+
+    this.addLights(Application.getModel());
+    this.addLabels(Application.getModel());
+    this.addTemperatures(Application.getModel());
 
     this.draw();
   }

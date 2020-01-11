@@ -8,18 +8,18 @@ import home.io.CommunicationAPI;
 import home.io.SerialAPIListener;
 import home.io.SerialIO;
 import home.model.House;
-import home.model.Light;
-import home.model.Room;
+import home.util.JSONCoder;
+import home.util.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -77,61 +77,27 @@ public class Application extends javafx.application.Application
   {
     if (path == null)
     {
-      if (Application.SAVE == null) { DialogManager.error("Cannot SAVE model", "No SAVE path set."); }
+      if (Application.SAVE == null) { DialogManager.error("Cannot save model", "No save path set."); }
       path = Application.SAVE;
     }
     Application.SAVE = path;
 
-    // serialize JSON object
-    JSONObject data = new JSONObject();
-    data.put("map_size", Application.model.getSize());
+    JSONObject data = JSONCoder.toJSON(Application.model);
 
-    JSONArray jRooms = new JSONArray();
-    for (Room room : Application.model.getRooms())
-    {
-      JSONObject jRoom = new JSONObject();
-      JSONArray jRoomLights = new JSONArray();
-      JSONArray jRoomPolygon = new JSONArray();
-      jRoomPolygon.addAll(room.getIndices());
-
-      for (Light light : room.getLights())
-      {
-        // light JSON data
-        JSONObject jLight = new JSONObject();
-
-        // position array
-        JSONArray jLightPosition = new JSONArray();
-        jLightPosition.add(light.getPosition()[0]);
-        jLightPosition.add(light.getPosition()[1]);
-
-        jLight.put("id", light.getID());
-        jLight.put("position", jLightPosition);
-
-        jRoomLights.add(jLight);
-      }
-
-      jRoom.put("alt", room.getName());
-      jRoom.put("id", room.id());
-
-      jRoom.put("indices", jRoomPolygon);
-      jRoom.put("lights", jRoomLights);
-      jRoom.put("managed", room.isManaged());
-
-      jRooms.add(jRoom);
-    }
-
-    // add room list to json data
-    data.put("rooms", jRooms);
-
-    // SAVE json data
+    // save json data
     byte[] bData = data.toJSONString().getBytes();
-    try (FileOutputStream fos = new FileOutputStream(path + ".jmap"))
+    try (FileOutputStream stream = new FileOutputStream(path + ".jmap"))
     {
-      fos.write(bData);
+      // clear old file content
+      new PrintWriter(path + ".jmap").close();
+      stream.write(bData);
+
+      Application.debug("Saved model as \'" + path + ".jmap\'.");
     }
     catch(Exception e)
     {
       Application.debug(e.getMessage());
+      Application.debug("Failed to save model as \'" + path + ".jmap\'. - " + e.getMessage());
     }
   }
 
@@ -144,16 +110,9 @@ public class Application extends javafx.application.Application
    * Loads a model to be used. This will trigger loading of a new model from a map.json file and a chain of requests to the WSN as values have to be reevaluated.
    * @param data JSON file containing the maps data
    */
-  public static synchronized void loadModel(JSONObject data)
+  public static synchronized void loadModel(JSONObject data) throws Exception
   {
-    try
-    {
-      Application.model = new House(data);
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
+    Application.model = JSONCoder.fromJSON(data);
   }
 
   /**
@@ -320,7 +279,7 @@ public class Application extends javafx.application.Application
     // load map if we have a SAVE from command line arguments (-load)
     if (Application.SAVE != null)
     {
-
+      // todo: implementation maybe in the next decade...
     }
 
     stage.show();

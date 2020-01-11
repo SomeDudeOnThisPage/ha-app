@@ -40,6 +40,14 @@ public class SerialAPIListener implements APIListener
     return model;
   }
 
+  private void redraw()
+  {
+    if (Application.canvas() != null && Application.canvas().getView() != null)
+    {
+      Platform.runLater(() -> Application.canvas().getView().draw());
+    }
+  }
+
   /**
    * Implementation of the onLightSwitch callback.
    * @param roomID room ID
@@ -57,7 +65,11 @@ public class SerialAPIListener implements APIListener
       // set state in model
       model.getRoom(roomID).getLight(lightID).setState(state);
 
-      Application.status("turned on light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
+      redraw();
+
+      String s = (state == Light.State.LIGHT_ON) ? "on" : "off";
+
+      Application.status("Turned " + s + " light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
     }
     catch(Exception e)
     {
@@ -83,8 +95,7 @@ public class SerialAPIListener implements APIListener
       // set state in model
       model.getRoom(roomID).getLight(lightID).setMode(mode);
 
-      // set state in controller
-      // todo
+      redraw();
 
       Application.status("changed mode of light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
     }
@@ -114,11 +125,40 @@ public class SerialAPIListener implements APIListener
       // set state in controller
       Platform.runLater(() -> Application.control().getRoomControls(roomID).setTemperature(actual));
 
+      redraw();
+
       // let's not spam the status bar with temperature changes
       //Application.status("received new temperature data in \'" + model.getRoom(roomID).getName() + "\'");
 
     }
     catch(Exception e)
+    {
+      // uh oh, our house doesn't support the received message...
+      Application.debug("could not set temperature in room #" + roomID + ": " + e.getMessage());
+    }
+  }
+
+  @Override
+  public void onTemperatureReference(int roomID, float actual)
+  {
+    Application.debug("method \'onTemperatureReference\' has been called");
+
+    try
+    {
+      House model = this.verify(roomID, -1);
+
+      // set state in model
+      model.getRoom(roomID).temperature().setReference(actual);
+
+      // set state in controller
+      //Platform.runLater(() -> Application.control().getRoomControls(roomID)(actual));
+
+      redraw();
+
+      // let's not spam the status bar with temperature changes
+      //Application.status("received new temperature data in \'" + model.getRoom(roomID).getName() + "\'");
+    }
+    catch (Exception e)
     {
       // uh oh, our house doesn't support the received message...
       Application.debug("could not set temperature in room #" + roomID + ": " + e.getMessage());
@@ -149,6 +189,4 @@ public class SerialAPIListener implements APIListener
     Application.control().disableControls(false);
     Application.controller().setLoading(false);
   }
-
-
 }

@@ -2,9 +2,12 @@ package home.gui;
 
 import com.fazecast.jSerialComm.SerialPort;
 import home.Application;
+import home.io.CommunicationAPI;
 import home.io.SerialIO;
 import home.model.House;
+import home.model.Light;
 import home.model.Room;
+import home.model.TextLabel;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -110,6 +113,13 @@ public class MainController implements Initializable
           Application.getModel().removeRoom((Room) item.getUserData());
           this.menu_removeRoom.getItems().remove(item);
 
+          for (Light light : room.getLights())
+          {
+            Application.canvas().removeInteractable(light);
+          }
+
+          Application.canvas().removeInteractable(room.temperature());
+
           // repopulate controller!
           Application.control().populate();
 
@@ -175,6 +185,8 @@ public class MainController implements Initializable
     selector.setTitle("Select Save File...");
     selector.setInitialDirectory(new File("resources/maps"));
 
+    selector.getExtensionFilters().add(new FileChooser.ExtensionFilter("jmap files (*.jmap)", "*.jmap"));
+
     File map = selector.showOpenDialog(Application.STAGE);
 
     if (map != null && !map.isDirectory())
@@ -184,15 +196,24 @@ public class MainController implements Initializable
       // load from json
       JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(map));
 
-      // update model and controllers
-      Application.loadModel(json);
-      Application.canvas().populate();
-      Application.control().populate();
+      try
+      {
+        // update model and controllers
+        Application.loadModel(json);
+        Application.canvas().populate();
+        Application.control().populate();
 
-      Application.status("loaded model from " + map);
+        Application.status("Loaded model from " + map + "!");
+        Application.SAVE = map.getName();
 
-      // refresh room list yada yada...
-      this.menu_populateRemoveRoomMenuItem(Application.getModel());
+        // refresh room list yada yada...
+        this.menu_populateRemoveRoomMenuItem(Application.getModel());
+      }
+      catch (Exception e)
+      {
+        DialogManager.error("Failed to load model", e.getMessage());
+        Application.debug("Failed to load model: " + e.getMessage());
+      }
 
       return;
     }
@@ -212,15 +233,21 @@ public class MainController implements Initializable
     }
     else
     {
-      // SAVE on current handle
+      // save on current handle
       Application.saveModel(null);
     }
+
+    Application.status("Model saved as \'" + Application.SAVE + ".jmap\'!");
   }
 
   @FXML
   protected void menu_onSaveAs()
   {
-    // SAVE on new handle
+    // query new handle
+    // todo...
+
+    // save on new handle
+    Application.status("Model saved as \'" + Application.SAVE + ".jmap\'!");
   }
 
   @FXML
@@ -234,7 +261,7 @@ public class MainController implements Initializable
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   @FXML
-  protected void menu_onNewRoom()
+  public void menu_onNewRoom()
   {
     if (Application.canvas().isDrawing())
     {
@@ -266,22 +293,29 @@ public class MainController implements Initializable
   }
 
   @FXML
-  protected void menu_onNewLight()
+  public void menu_onNewLight()
   {
-    if (Application.canvas().isDrawing())
-    {
-      DialogManager.error("Cannot create new light", "Please finish your current drawing first");
-      return;
-    }
-
     if (Application.getModel() != null)
     {
       int[] data = DialogManager.lightificator(Application.getModel());
-      if (data == null) { DialogManager.error("shit", "this should never happen..."); return; }
+      if (data == null) { return; }
 
       // draw light
       Application.status("[SHIFT] + [LMB] to place the light. [ENTER] once you're happy with the lights' position.");
-      Application.canvas().drawLight(data[1], data[0]);
+
+      double pos = Application.canvas().getView().getWidth() / 2.0;
+
+      Light light = new Light(data[1], pos, pos, Application.getModel().getRoom(data[0]).getName());
+      try
+      {
+        Application.getModel().getRoom(data[0]).addLight(light);
+        Application.canvas().addInteractable(light);
+        Application.control().populate();
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
     }
     else
     {
@@ -290,21 +324,46 @@ public class MainController implements Initializable
   }
 
   @FXML
-  protected void menu_onNewTemperature()
+  public void menu_onNewTemperature()
   {
+    if (Application.getModel() != null)
+    {
+      double pos = Application.canvas().getView().getWidth() / 2.0;
 
+      int roomID = DialogManager.temperatureficator(Application.getModel());
+
+      if (roomID != -1)
+      {
+        Application.getModel().getRoom(roomID).temperature().getPosition()[0] = pos;
+        Application.getModel().getRoom(roomID).temperature().getPosition()[1] = pos;
+        Application.canvas().addInteractable(Application.getModel().getRoom(roomID).temperature());
+      }
+      else
+      {
+        DialogManager.info("Couldn't create temperature display.", "Check if the room already has a temperature display. If so, use that or remove it first.");
+      }
+    }
+    else
+    {
+      DialogManager.error("No Floor Plan loaded", "Load a Floor Plan via 'File > Load Floor Plan' or create a new one via 'File > New Floor Plan'.");
+    }
   }
 
   @FXML
-  protected void menu_onNewLabel()
+  public void menu_onNewLabel()
   {
+    if (Application.getModel() != null)
+    {
+      double pos = Application.canvas().getView().getWidth() / 2.0;
 
-  }
-
-  @FXML
-  protected void menu_onRemoveRoom()
-  {
-
+      TextLabel label = new TextLabel(pos, pos, 50.0, 0.0, "[SHIFT] + [RMB] to edit...");
+      Application.getModel().addLabel(label);
+      Application.canvas().addInteractable(label);
+    }
+    else
+    {
+      DialogManager.error("No Floor Plan loaded", "Load a Floor Plan via 'File > Load Floor Plan' or create a new one via 'File > New Floor Plan'.");
+    }
   }
 
   @FXML
@@ -316,6 +375,22 @@ public class MainController implements Initializable
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Handlers for: menu > Connection Properties
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  @FXML
+  protected void menu_onInitializeModel()
+  {
+    if (SerialIO.isSet())
+    {
+      CommunicationAPI.init();
+      this.setLoading(true);
+
+      // todo: 5 second timer for answer from WSN
+    }
+    else
+    {
+      DialogManager.error("no connection", "Please connect to a serial port to start initialization.");
+    }
+  }
 
   @FXML
   protected void menu_onRefreshPortsList()
