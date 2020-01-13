@@ -180,7 +180,7 @@ public class MainController implements Initializable
     // simple JavaFX file chooser to load our map
     FileChooser selector = new FileChooser();
     selector.setTitle("Select Save File...");
-    selector.setInitialDirectory(new File("resources/maps"));
+    selector.setInitialDirectory(new File(Application.SAVE_DIRECTORY));
 
     selector.getExtensionFilters().add(new FileChooser.ExtensionFilter("jmap files (*.jmap)", "*.jmap"));
 
