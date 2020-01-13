@@ -1,15 +1,10 @@
 package home;
 
-import home.gui.CanvasController;
-import home.gui.ControlController;
-import home.gui.DialogManager;
-import home.gui.MainController;
-import home.io.CommunicationAPI;
-import home.io.SerialAPIListener;
-import home.io.SerialIO;
+import home.gui.*;
+import home.io.*;
+import home.util.*;
+
 import home.model.House;
-import home.util.JSONCoder;
-import home.util.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -51,6 +46,12 @@ public class Application extends javafx.application.Application
   /** Default program title. */
   public static final String TITLE = "ZigBee Home Automation";
 
+  /** Default log file directory */
+  public static final String LOG_DIRECTORY = "logs/";
+
+  /** Default program save directory. */
+  public static final String SAVE_DIRECTORY = "maps/";
+
   /** Current save path to save the model to */
   public static String SAVE;
 
@@ -86,13 +87,13 @@ public class Application extends javafx.application.Application
 
     // save json data
     byte[] bData = data.toJSONString().getBytes();
-    try (FileOutputStream stream = new FileOutputStream(path + ".jmap"))
+    try (FileOutputStream stream = new FileOutputStream(path))
     {
       // clear old file content
-      new PrintWriter(path + ".jmap").close();
+      new PrintWriter(path).close();
       stream.write(bData);
 
-      Application.debug("Saved model as \'" + path + ".jmap\'.");
+      Application.debug("Saved model as \'" + path + "\'.");
     }
     catch(Exception e)
     {
@@ -296,6 +297,10 @@ public class Application extends javafx.application.Application
     {
       Application.logger = new Logger(new SimpleDateFormat("yyyy-MM-dd.HH-mm-ss").format(new Date()));
     }
+
+    // create neccessary directories if they do not exist
+    new File(Application.LOG_DIRECTORY).mkdirs();
+    new File(Application.SAVE_DIRECTORY).mkdirs();
 
     // copy arguments so we can access them after we launched the app as we need to initialize the JavaFX application to show error alert dialogs
     Application.args = args;

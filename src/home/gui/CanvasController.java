@@ -4,6 +4,7 @@ import home.Application;
 import home.gui.elements.FloorPlan;
 import home.model.Light;
 import home.model.Room;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -140,6 +141,11 @@ public class CanvasController implements Initializable
   {
     this.interactables.getChildren().remove(interactable);
     this.view.draw();
+  }
+
+  public ObservableList<Node> getInteractables()
+  {
+    return this.interactables.getChildren();
   }
 
   /**

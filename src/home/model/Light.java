@@ -5,18 +5,13 @@ import home.gui.DialogManager;
 import javafx.event.Event;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
-import javafx.scene.effect.Bloom;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Glow;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-
-import javax.tools.Tool;
 
 /**
  * It's a light.

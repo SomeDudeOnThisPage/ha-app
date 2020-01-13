@@ -1,5 +1,7 @@
 package home.util;
 
+import home.Application;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +32,7 @@ public class Logger
       FileInputStream fis =  new FileInputStream("logging.properties");
       LogManager.getLogManager().readConfiguration(fis);
 
-      File file = new File("logs\\" + name + ".log");
+      File file = new File(Application.LOG_DIRECTORY + name + ".log");
       if (!file.exists())
       { file.createNewFile(); }
 

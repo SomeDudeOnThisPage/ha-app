@@ -4,13 +4,11 @@ import com.fazecast.jSerialComm.SerialPort;
 import home.Application;
 import home.io.CommunicationAPI;
 import home.io.SerialIO;
-import home.model.House;
-import home.model.Light;
-import home.model.Room;
-import home.model.TextLabel;
+import home.model.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
@@ -166,8 +164,7 @@ public class MainController implements Initializable
     }
 
     Application.newModel(result.getValue());
-    Application.saveModel(result.getKey());
-
+    Application.saveModel(Application.SAVE_DIRECTORY + result.getKey() + ".jmap");
     Application.canvas().populate();
     Application.control().populate();
 
@@ -237,7 +234,7 @@ public class MainController implements Initializable
       Application.saveModel(null);
     }
 
-    Application.status("Model saved as \'" + Application.SAVE + ".jmap\'!");
+    Application.status("Model saved as \'" + Application.SAVE + "\'!");
   }
 
   @FXML
@@ -247,7 +244,7 @@ public class MainController implements Initializable
     // todo...
 
     // save on new handle
-    Application.status("Model saved as \'" + Application.SAVE + ".jmap\'!");
+    Application.status("Model saved as \'" + Application.SAVE + "\'!");
   }
 
   @FXML
@@ -334,9 +331,21 @@ public class MainController implements Initializable
 
       if (roomID != -1)
       {
+        Temperature temperature = Application.getModel().getRoom(roomID).temperature();
+
+        // check if the rooms' temperature element is already added to the element pane
+        for (Node element : Application.canvas().getInteractables())
+        {
+          if (element == temperature)
+          {
+            DialogManager.info("Couldn't create temperature display.", "Check if the room already has a temperature display. If so, use that or remove it first.");
+            return;
+          }
+        }
+
         Application.getModel().getRoom(roomID).temperature().getPosition()[0] = pos;
         Application.getModel().getRoom(roomID).temperature().getPosition()[1] = pos;
-        Application.canvas().addInteractable(Application.getModel().getRoom(roomID).temperature());
+        Application.canvas().addInteractable(temperature);
       }
       else
       {
