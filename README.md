@@ -10,6 +10,7 @@ For an ingoing message, the method **update (String data)** is called. Then the 
 multiple messages.
 2. Split by " " (_space_) to extract information from the String.
 
+Therefore it is mandatory for the WSN to write the messages according to the scheme above!
 
 Afterwards, the extracted data goes into further process.
 The procedure consists of **three** basic steps, which apply to every given String.
