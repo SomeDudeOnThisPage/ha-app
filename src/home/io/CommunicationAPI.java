@@ -1,18 +1,16 @@
 package home.io;
 import home.Application;
 import home.model.Light;
-import java.util.logging.Level;
 
-// So mein Schadz ich hab mal die funktionalität der API schemenhaft implementiert dass ich damit schonmal arbeiten kann
-// hab versucht alles verständlich zu dokumentieren, schau dir einfach den zusammenhang von CommunicationAPI, APIListener und
-// SerialAPIListener an.
+import java.time.chrono.IsoChronology;
+import java.util.logging.Level;
 
 /**
  * <h1>CommunicationAPI</h1>
  * The static CommunicationAPI class is used to handle incoming and outgoing network traffic between the application and the WSN.
  * It uses an APIListener Interface set on creation to implement simple callbacks.
  *
- * @author Maxiboi
+ * @author Maximilian Morlock
  * @version -1000000
  * @since 2019-11-30
  */
@@ -31,15 +29,8 @@ public class CommunicationAPI
    */
   public static synchronized void initialize(APIListener listener)
   {
-    // die methode hier wird in Application.java in der start-methode aufgerufen und damit wird der listener gesetzt.
-    // der listener implementiert dann die methoden die du in APIListener definieren kannst.
-    // wenn du ne methode in APIListener definiertst zwingst du mich damit in meiner subklasse die funktionalität von
-    // der methode zu implementieren.
     CommunicationAPI.listener = listener;
   }
-
-  // die outgoing methods können direkt in der CommunicationAPI sein, auch static!
-  // wichtig is nur dass die synchronized sind falls wir threading machen!
 
   public static synchronized void setLight(int roomid, int lightid, Light.State status){
     String s = (status == Light.State.LIGHT_ON) ? "on" : "off";
@@ -72,11 +63,83 @@ public class CommunicationAPI
    * @param data Received data in serialized string form
    * @see SerialIO
    */
-  public static void update(String data) {
-    Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
+  public static void update(Byte[] data) {
+    //Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
 
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE\r\n");}
 
+    if (data.length != 4) {
+      Application.debug("invalid length of received data", Level.WARNING);
+    }
+    else {
+      Byte instruction = data[0];
+      switch (instruction){
+        //start_init
+        case 0x00:
+          listener.onStart_init();
+          break;
+
+        //end_init
+        case 0x01:
+          listener.onEnd_init();
+          break;
+
+        //light_switch
+        case 0x02:
+          byte light_switch = data[3];
+          Light.State state;
+
+          if (light_switch == 0x01){
+            state = Light.State.LIGHT_ON;
+            listener.onLightSwitch(data[1], data[2], state);
+          }
+          else if (light_switch == 0x00){
+            state = Light.State.LIGHT_OFF;
+            listener.onLightSwitch(data[1], data[2], state);
+          }
+          break;
+
+        //light_mode
+        case 0x03:
+          byte light_mode = data[3];
+          Light.Mode mode;
+
+          if (light_mode == 0x00){
+            mode = Light.Mode.MODE_MANUAL;
+            listener.onLightMode(data[1], data[2], mode);
+          }
+          else if (light_mode == 0x01){
+            mode = Light.Mode.MODE_AUTOMATIC;
+            listener.onLightMode(data[1], data[2], mode);
+          }
+          break;
+
+        //temperature
+        case 0x04:
+            float result = data[2];
+            float decimal = data[3];
+            decimal = decimal/100;
+            result = result + decimal;
+            listener.onTemperature(data[1], result);
+            break;
+
+        //temperature_reference
+        case 0x05:
+          float reference = data[2];
+          float decimal2 = data[3];
+          decimal = decimal2/100;
+          result = reference + decimal2;
+          listener.onTemperatureReference(data[1], reference);
+          break;
+
+        default:
+          Application.debug("received invalid message - no instruction matches");
+          break;
+      }
+    }
+
+
+    /*
     String[] parts = data.split(" ");
 
     String instruction = parts[0];
@@ -160,6 +223,6 @@ public class CommunicationAPI
       default:
         Application.debug("received invalid message - no instruction matches");
         break;
-      }
+      }*/
    }
   }
