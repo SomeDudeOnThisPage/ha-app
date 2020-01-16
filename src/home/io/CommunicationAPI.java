@@ -3,6 +3,7 @@ import home.Application;
 import home.model.Light;
 
 import java.time.chrono.IsoChronology;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 /**
@@ -64,7 +65,7 @@ public class CommunicationAPI
    * @see SerialIO
    */
   public static void update(Byte[] data) {
-    //Application.debug("processing data packet with content " + data.replace("\n", "\\n").replace("\r", "\\r"));
+    Application.debug("processing data packet with content " + Arrays.toString(data).replace("\n", "\\n").replace("\r", "\\r"));
 
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE\r\n");}
 
@@ -73,7 +74,7 @@ public class CommunicationAPI
     }
     else {
       Byte instruction = data[0];
-      switch (instruction){
+      switch (instruction) {
         //start_init
         case 0x00:
           listener.onStart_init();
