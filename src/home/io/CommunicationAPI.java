@@ -30,7 +30,9 @@ public class CommunicationAPI
    */
   public static synchronized void initialize(APIListener listener)
   {
+
     CommunicationAPI.listener = listener;
+
   }
 
   public static synchronized void setLight(int roomid, int lightid, Light.State status){
@@ -48,14 +50,30 @@ public class CommunicationAPI
   }
 
   public static synchronized void tempReference(int roomid, float temp){
-    String message = "temperature_reference "+roomid+" "+temp;
-    SerialIO.write(message + "\r\n");
+    int vorkomma = (int) temp;
+
+    float nach = temp * 100;
+    float nach2 = nach%100;
+    int nachkomma = (int) nach2;
+
+    String hex1 = Integer.toHexString(roomid);
+    Byte rmID = Byte.parseByte(hex1, 16);
+
+    String hex2 = Integer.toHexString(vorkomma);
+    Byte pre = Byte.parseByte(hex2, 16);
+
+    String hex3 = Integer.toHexString(nachkomma);
+    Byte after = Byte.parseByte(hex3, 16);
+
+    Byte[] message = new Byte[]{0x05, rmID, pre, after, 0x0d};
+    System.out.println(Arrays.toString(message));
+    //SerialIO.write(message);
   }
 
   public static synchronized void init()
   {
-    String message = "start_init";
-    SerialIO.write(message + "\r\n");
+    Byte[] message = new Byte[]{0x00, 0x00, 0x00, 0x00, 0x0d};
+    //SerialIO.write(message);
   }
 
 
@@ -69,7 +87,7 @@ public class CommunicationAPI
 
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE\r\n");}
 
-    if (data.length != 4) {
+    if (data.length != 5) {
       Application.debug("invalid length of received data", Level.WARNING);
     }
     else {
@@ -122,6 +140,7 @@ public class CommunicationAPI
             decimal = decimal/100;
             result = result + decimal;
             listener.onTemperature(data[1], result);
+            Application.debug(result);
             break;
 
         //temperature_reference
@@ -130,7 +149,7 @@ public class CommunicationAPI
           float decimal2 = data[3];
           decimal = decimal2/100;
           result = reference + decimal2;
-          listener.onTemperatureReference(data[1], reference);
+          listener.onTemperatureReference(data[1], result);
           break;
 
         default:
