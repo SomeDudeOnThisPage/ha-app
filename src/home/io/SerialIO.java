@@ -5,7 +5,6 @@ import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import home.Application;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 
 /**
@@ -31,6 +30,20 @@ public class SerialIO
   private static String messages = "";
 
   private static SerialPort current;
+
+  private static String toHexString(byte[] bytes) {
+    StringBuilder hexString = new StringBuilder();
+    for (int i = 0; i < bytes.length; i++)
+    {
+      String hex = Integer.toHexString(0xFF & bytes[i]);
+      if (hex.length() == 1)
+      {
+        hexString.append('0');
+      }
+      hexString.append(hex);
+    }
+    return hexString.toString();
+  }
 
   /**
    * Initializes the SerialIO class.
@@ -104,13 +117,24 @@ public class SerialIO
         {
           SerialIO.messages += new String(event.getReceivedData());
 
-          while (SerialIO.messages.contains("\r\n"))
+          while (SerialIO.messages.contains("\r"))
           {
-            String[] message = messages.split("\\r\\n", 2);
+            String[] message = messages.split("\\r", 2);
             SerialIO.messages = (message.length > 1) ? message[1] : "";
 
-            Application.debug("received data packet with size of " + message[0].length() + " bytes with content \'" + message[0] + "\'");
-            CommunicationAPI.update(message[0]);
+            byte[] bytes = message[0].getBytes();
+            Application.debug("received data packet with size of " + message[0].length() + " bytes with content \'0x" + toHexString(bytes) + "\'");
+
+            // convert byte[] to Byte[] as we need the functionality of the non-primitive in the CommunicationAPI
+            Byte[] output = new Byte[bytes.length];
+            int i = 0;
+            for(byte b: bytes)
+            {
+              output[i++] = b;
+            }
+
+            // push to CommunicationAPI
+            CommunicationAPI.update(output);
           }
         }
       });
@@ -139,7 +163,7 @@ public class SerialIO
     }
   }
 
-  public static synchronized void write(String data)
+  public static synchronized void write(Byte[] data)
   {
     if (!SerialIO.init)
     {
@@ -156,10 +180,18 @@ public class SerialIO
       return;
     }
 
-    // jSerialComm buffers internally so there's no need for us to handle that manually
-    SerialIO.current.writeBytes(data.getBytes(), data.length());
+    // unbox Byte[] to byte[] so jSerialComm works
+    int i=0;
+    byte[] output = new byte[data.length];
+    for(Byte b: data)
+    {
+      output[i++] = b;
+    }
+
+    // jSerialComm buffers writing internally so there's no need for us to handle that manually
+    SerialIO.current.writeBytes(output, data.length);
 
     // let's not print line breaks in debug messages
-    Application.debug("sent data packet with content \'" + data.replace("\n", "\\n").replace("\r", "\\r") + "\'");
+    Application.debug("sent data packet with content \'" + new String(output).replace("\n", "\\n").replace("\r", "\\r") + "\'");
   }
 }

@@ -44,14 +44,16 @@ public class CommunicationAPI
     String hex2 = Integer.toHexString(lightid);
     byte lID = Byte.parseByte(hex2, 16);
 
+    Byte[] message;
+
     if (s.equals("off")){
-      Byte[] message = new Byte[]{0x02, rmID, lID, 0x00, 0x0d};
+      message = new Byte[]{0x02, rmID, lID, 0x00, 0x0d};
     }
     else {
-      Byte[] message = new Byte[]{0x02, rmID, lID, 0x01, 0x0d};
+      message = new Byte[]{0x02, rmID, lID, 0x01, 0x0d};
     }
 
-    //SerialIO.write(message);
+    SerialIO.write(message);
   }
 
   public static synchronized void setLightMode(int roomid, int lightid, Light.Mode mode){
@@ -63,14 +65,16 @@ public class CommunicationAPI
     String hex2 = Integer.toHexString(lightid);
     byte lID = Byte.parseByte(hex2, 16);
 
+    Byte[] message;
+
     if (s.equals("manual")){
-      Byte[] message = new Byte[]{0x03, rmID, lID, 0x00, 0x0d};
+      message = new Byte[]{0x03, rmID, lID, 0x00, 0x0d};
     }
     else {
-      Byte[] message = new Byte[]{0x03, rmID, lID, 0x01, 0x0d};
+      message = new Byte[]{0x03, rmID, lID, 0x01, 0x0d};
     }
 
-    //SerialIO.write(message);
+    SerialIO.write(message);
   }
 
   public static synchronized void tempReference(int roomid, float temp){
@@ -91,13 +95,13 @@ public class CommunicationAPI
 
     Byte[] message = new Byte[]{0x05, rmID, pre, after, 0x0d};
     //System.out.println(Arrays.toString(message));
-    //SerialIO.write(message);
+    SerialIO.write(message);
   }
 
   public static synchronized void init()
   {
     Byte[] message = new Byte[]{0x00, 0x00, 0x00, 0x00, 0x0d};
-    //SerialIO.write(message);
+    SerialIO.write(message);
   }
 
 
@@ -111,7 +115,7 @@ public class CommunicationAPI
 
     if (listener == null ) {Application.debug("ERROR: LISTENER NOT AVAILABLE\r\n");}
 
-    if (data.length != 5) {
+    if (data.length != 4) {
       Application.debug("invalid length of received data", Level.WARNING);
     }
     else {
