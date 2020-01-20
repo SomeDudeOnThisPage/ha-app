@@ -7,9 +7,10 @@ Many messages are symmetric, meaning they are both **in-** and **outgoing**!\
 \
 Certain rules apply to messages:
 1. A message has a length of **five bytes**.
-2. The fifth byte is a **carriage-return delimiter (0x0D)** used to split messages.
-3. A message starts with an **opcode** with a length of **1B**. Available opcodes are described in detail below.
-4. Bytes 2-4 are **data bytes** used for communication. The type of data varies depending on the opcode.
+2. A message starts with an **opcode** with a length of **1B**. Available opcodes are described in detail below.
+3. Bytes 2-4 are **data bytes** used for communication. The type of data varies depending on the opcode.
+4. The fifth byte is a **carriage-return delimiter (0x0D)** used to split messages.
+
 ---
 
 ### Begin Initialization
@@ -39,7 +40,32 @@ The Application requests the begin of the initialization phase.
 ````
 Hex: 0x000000000D
 ````
+---
 
+###End Initialization
+
+**Type:** Ingoing
+
+**Opcode:** 0x01
+
+**Description:** ends the initialization of the Application
+
+<br>
+
+| Data Field  | Data      | Type   | Description                            | Possible Values |
+|:------------|:----------|:-------|:---------------------------------------|:----------------|
+| **byte #1** | opcode    | (-)    | Begin Initialization Opcode            | **0x01**        |
+| **byte #2** | null      | (-)    | unused                                 | (-)             |
+| **byte #3** | null      | (-)    | unused                                 | (-)             |
+| **byte #4** | null      | (-)    | unused                                 | (-)             |
+| **byte #5** | delimiter | (-)    | Message Delimiter                      | **0x0D**        |
+
+###Usage Example
+The WSN signals the Application that all data has been sent.
+````
+Hex: 0x010000000D
+````
+---
 ### Light State Switching
 
 **Type:** In- & Outgoing
@@ -65,3 +91,79 @@ Hex: 0x020301010D
 ````
 
 ---
+### Light Mode Switching
+**Type:** In- & Outgoing
+
+**Opcode:** 0x03
+
+**Description:** Switches a lights' mode to either **manual** or **auto**.
+
+<br>
+
+| Data Field  | Data      | Type             | Description                            | Possible Values                   |
+|:------------|:----------|:-----------------|:---------------------------------------|:----------------------------------|
+| **byte #1** | opcode    | (-)              | Light Switch Opcode                    | **0x02**                          |
+| **byte #2** | room ID   | **unsigned int** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #3** | light ID  | **unsigned int** | Numerical ID of the Light.             | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #4** | mode      | **boolean**      | Desired mode of the light.             | [**0x00** (manual) \ **0x01** (auto)] |
+| **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
+
+##### Usage Example
+Switch light #3 in room #2 to **auto**
+
+````
+Hex: 0x030203010D 
+````
+---
+### Temperature
+
+**Type:** Ingoing
+
+**Opcode:** 0x04
+
+**Description:** The WSN tells the application the current temperature value of a specific room.
+                 
+<br>
+
+| Data Field  | Data      | Type             | Description                            | Possible Values                   |
+|:------------|:----------|:-----------------|:---------------------------------------|:----------------------------------|
+| **byte #1** | opcode    | (-)              | Light Switch Opcode                    | **0x02**                          |
+| **byte #2** | room ID   | **unsigned int** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #3** | temp. value| **signed int**  | integer places  (xx.00)                | [**0xFF** (-128) - **0x7F** (127)]|
+| **byte #4** | temp. value| **unsigned int**| decimal places  (00.xx)                | [**0x00** (0) - **0xFF** - (255)] |
+| **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
+
+#####Usage Example
+The WSN telling the App that the temperature in room #0 is 23,5°C:
+
+````
+Hex: 0x040017320D
+````
+---
+
+###Temperature Reference
+
+**Type:** In- & Outgoing
+
+**Opcode:** 0x05
+
+**Description:** the Application sets a temperature reference for heating control. 
+This message is only ingoing during the **Initialization Phase**.
+
+<br>
+
+| Data Field  | Data      | Type             | Description                            | Possible Values                   |
+|:------------|:----------|:-----------------|:---------------------------------------|:----------------------------------|
+| **byte #1** | opcode    | (-)              | Light Switch Opcode                    | **0x02**                          |
+| **byte #2** | room ID   | **unsigned int** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #3** | temp. value| **signed int**  | integer places  (xx.00)                | [**0xFF** (-128) - **0x7F** (127)]|
+| **byte #4** | temp. value| **unsigned int**| decimal places  (00.xx)                | [**0x00** (0) - **0xFF** - (255)] |
+| **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
+
+
+#####Usage Example
+The Application tells the WSN to cool / heat the room #1 to 21.00°C:
+
+````
+Hex: 0x050115000D
+````
