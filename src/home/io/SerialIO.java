@@ -31,18 +31,24 @@ public class SerialIO
 
   private static SerialPort current;
 
-  private static String toHexString(byte[] bytes) {
-    StringBuilder hexString = new StringBuilder();
-    for (int i = 0; i < bytes.length; i++)
+  /**
+   * Converts a byte array to a Hex String.
+   * @param bytes byte array
+   * @return string in hexadecimal format
+   */
+  private static String toHexString(byte[] bytes)
+  {
+    StringBuilder string = new StringBuilder();
+    for (byte b : bytes)
     {
-      String hex = Integer.toHexString(0xFF & bytes[i]);
+      String hex = Integer.toHexString(0xFF & b);
       if (hex.length() == 1)
       {
-        hexString.append('0');
+        string.append('0');
       }
-      hexString.append(hex);
+      string.append(hex);
     }
-    return hexString.toString();
+    return string.toString();
   }
 
   /**
@@ -115,6 +121,7 @@ public class SerialIO
         @Override
         public void serialEvent(SerialPortEvent event)
         {
+          // It's easier to convert to String and use contains() / split(), then use getBytes() to convert to byte array again
           SerialIO.messages += new String(event.getReceivedData());
 
           while (SerialIO.messages.contains("\r"))
@@ -189,6 +196,7 @@ public class SerialIO
     }
 
     // jSerialComm buffers writing internally so there's no need for us to handle that manually
+    // also this is pretty much out of our control as this is the OS' job
     SerialIO.current.writeBytes(output, data.length);
 
     // let's not print line breaks in debug messages
