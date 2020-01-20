@@ -42,7 +42,7 @@ Hex: 0x000000000D
 ````
 ---
 
-###End Initialization
+### End Initialization
 
 **Type:** Ingoing
 
@@ -60,7 +60,7 @@ Hex: 0x000000000D
 | **byte #4** | null      | (-)    | unused                                 | (-)             |
 | **byte #5** | delimiter | (-)    | Message Delimiter                      | **0x0D**        |
 
-###Usage Example
+### Usage Example
 The WSN signals the Application that all data has been sent.
 ````
 Hex: 0x010000000D
@@ -133,7 +133,7 @@ Hex: 0x030203010D
 | **byte #4** | temp. value| **unsigned int**| decimal places  (00.xx)                | [**0x00** (0) - **0xFF** - (255)] |
 | **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
 
-#####Usage Example
+##### Usage Example
 The WSN telling the App that the temperature in room #0 is 23,5°C:
 
 ````
@@ -141,7 +141,7 @@ Hex: 0x040017320D
 ````
 ---
 
-###Temperature Reference
+### Temperature Reference
 
 **Type:** In- & Outgoing
 
@@ -161,7 +161,7 @@ This message is only ingoing during the **Initialization Phase**.
 | **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
 
 
-#####Usage Example
+##### Usage Example
 The Application tells the WSN to cool / heat the room #1 to 21.00°C:
 
 ````
