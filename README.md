@@ -79,8 +79,8 @@ Hex: 0x010000000D
 | Data Field  | Data      | Type             | Description                            | Possible Values                   |
 |:------------|:----------|:-----------------|:---------------------------------------|:----------------------------------|
 | **byte #1** | opcode    | (-)              | Light Switch Opcode                    | **0x02**                          |
-| **byte #2** | room ID   | **unsigned int** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
-| **byte #3** | light ID  | **unsigned int** | Numerical ID of the Light.             | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #2** | room ID   | **unsigned char** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #3** | light ID  | **unsigned char** | Numerical ID of the Light.             | [**0x00** (0) - **0xFF** (255)]   |
 | **byte #4** | state     | **boolean**      | Desired state of the light.            | [**0x00** (off) \| **0x01** (on)] |
 | **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
 
@@ -103,8 +103,8 @@ Hex: 0x020301010D
 | Data Field  | Data      | Type             | Description                            | Possible Values                   |
 |:------------|:----------|:-----------------|:---------------------------------------|:----------------------------------|
 | **byte #1** | opcode    | (-)              | Light Switch Opcode                    | **0x03**                          |
-| **byte #2** | room ID   | **unsigned int** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
-| **byte #3** | light ID  | **unsigned int** | Numerical ID of the Light.             | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #2** | room ID   | **unsigned char** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #3** | light ID  | **unsigned char** | Numerical ID of the Light.             | [**0x00** (0) - **0xFF** (255)]   |
 | **byte #4** | mode      | **boolean**      | Desired mode of the light.             | [**0x00** (manual) \ **0x01** (auto)] |
 | **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
 
@@ -128,9 +128,9 @@ Hex: 0x030203010D
 | Data Field  | Data      | Type             | Description                            | Possible Values                   |
 |:------------|:----------|:-----------------|:---------------------------------------|:----------------------------------|
 | **byte #1** | opcode    | (-)              | Light Switch Opcode                    | **0x04**                          |
-| **byte #2** | room ID   | **unsigned int** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
-| **byte #3** | temp. value| **signed int**  | integer places  (xx.00)                | [**0xFF** (-128) - **0x7F** (127)]|
-| **byte #4** | temp. value| **unsigned int**| decimal places  (00.xx)                | [**0x00** (0) - **0xFF** - (255)] |
+| **byte #2** | room ID   | **unsigned char** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #3** | temp. value| **signed char**  | integer places  (xx.00)                | [**0xFF** (-128) - **0x7F** (127)]|
+| **byte #4** | temp. value| **unsigned char**| decimal places  (00.xx)                | [**0x00** (0) - **0x64** - (100)] |
 | **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
 
 ##### Usage Example
@@ -155,9 +155,9 @@ This message is only ingoing during the **Initialization Phase**.
 | Data Field  | Data      | Type             | Description                            | Possible Values                   |
 |:------------|:----------|:-----------------|:---------------------------------------|:----------------------------------|
 | **byte #1** | opcode    | (-)              | Light Switch Opcode                    | **0x05**                          |
-| **byte #2** | room ID   | **unsigned int** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
-| **byte #3** | temp. value| **signed int**  | integer places  (xx.00)                | [**0xFF** (-128) - **0x7F** (127)]|
-| **byte #4** | temp. value| **unsigned int**| decimal places  (00.xx)                | [**0x00** (0) - **0xFF** - (255)] |
+| **byte #2** | room ID   | **unsigned char** | Numerical ID of the Room.              | [**0x00** (0) - **0xFF** (255)]   |
+| **byte #3** | temp. value| **signed char**  | integer places  (xx.00)                | [**0xFF** (-128) - **0x7F** (127)]|
+| **byte #4** | temp. value| **unsigned char**| decimal places  (00.xx)                | [**0x00** (0) - **0x64** - (100)] |
 | **byte #5** | delimiter | (-)              | Message Delimiter                      | **0x0D**                          |
 
 
