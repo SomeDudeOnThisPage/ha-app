@@ -11,11 +11,49 @@ import home.model.Light;
  */
 public interface APIListener
 {
-  //definition for ingoing callbacks
+  /**
+   * Definition for onLightSwitch callback
+   * @param roomID
+   * @param lightID
+   * @param state
+   */
   void onLightSwitch(int roomID, int lightID, Light.State state);
+
+  /**
+   * Definition for onLightMode callback
+   * @param roomID
+   * @param lightID
+   * @param mode
+   */
   void onLightMode(int roomID, int lightID, Light.Mode mode);
+
+  /**
+   * Definition for onTemperature callback
+   * @param roomID
+   * @param actual
+   */
   void onTemperature(int roomID, float actual);
+
+  /**
+   * Definition for onDebug callback
+   * @param message
+   */
+  void onDebug(String message);
+
+  /**
+   * Definition for onTemperature callback
+   * @param roomID
+   * @param actual
+   */
   void onTemperatureReference(int roomID, float actual);
+
+  /**
+   * Definition for onStart_init callback
+   */
   void onStart_init();
+
+  /**
+   * Definition for onEnd_init callback
+   */
   void onEnd_init();
 }

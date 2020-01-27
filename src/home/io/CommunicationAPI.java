@@ -31,7 +31,13 @@ public class CommunicationAPI
     CommunicationAPI.listener = listener;
   }
 
-  //Outgoing method for setLight
+
+  /**
+   * This outgoing method is used to switch a light to either on or off
+   * @param roomid
+   * @param lightid
+   * @param status
+   */
   public static synchronized void setLight(int roomid, int lightid, Light.State status){
     String s = (status == Light.State.LIGHT_ON) ? "on" : "off";
 
@@ -56,10 +62,12 @@ public class CommunicationAPI
   }
 
 
-
-
-
-  //Outgoing method for setLightMode
+  /**
+   * This outgoing method switches a lights' mode to manual or auto
+   * @param roomid
+   * @param lightid
+   * @param mode
+   */
   public static synchronized void setLightMode(int roomid, int lightid, Light.Mode mode){
     //same procedure as for lightState!
     String s = (mode == Light.Mode.MODE_MANUAL) ? "manual" : "auto";
@@ -83,8 +91,11 @@ public class CommunicationAPI
   }
 
 
-
-  //Outgoing method for tempReference
+  /**
+   * this outgoing method sends a temperature reference to the WSN
+   * @param roomid
+   * @param temp
+   */
   public static synchronized void tempReference(int roomid, float temp){
     //To get the int value for everything before the decimal point
     //the float value is simply parsed to int
@@ -112,6 +123,9 @@ public class CommunicationAPI
     SerialIO.write(message);
   }
 
+  /**
+   * Outgoing method for initializing WSN
+   */
   public static synchronized void init()
   {
     Byte[] message = new Byte[]{0x00, 0x00, 0x00, 0x00, 0x0d};
@@ -121,7 +135,7 @@ public class CommunicationAPI
 
   /**
    * This method is called by the serial-management class when an ingoing message is received.
-   * @param data Received data in serialized string form
+   * @param data Received data in form of a Byte[] Array
    * @see SerialIO
    */
   public static void update(Byte[] data) {
