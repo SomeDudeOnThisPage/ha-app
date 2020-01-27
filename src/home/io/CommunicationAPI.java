@@ -259,7 +259,7 @@ public class CommunicationAPI
           float reference = data[2];
           float decimal2 = data[3];
 
-          decimal = decimal2/100;
+          decimal2 = decimal2/100;
           result = reference + decimal2;
 
           //                              roomID   temperature
