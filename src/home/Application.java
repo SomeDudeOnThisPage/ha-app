@@ -1,6 +1,7 @@
 package home;
 
 import home.gui.*;
+import home.gui.elements.FloorPlan;
 import home.io.*;
 import home.util.*;
 
@@ -21,12 +22,36 @@ import java.util.Date;
 import java.util.logging.Level;
 
 /**
- * "do some javadoc here you lazy shit" - me to myself.
+ * This Application was created for the module "Wireless Sensor Networks with ZigBee" module at FRA-UAS.
+ * It is designed to be used in conjunction with the WSN-Home-Automation components developed by other
+ * parts of the five-man team responsible for this project.
+ *
+ * <p>The Application can, however, be used with any WSN as long as it supports the Communication-Scheme
+ * detailed in <a href="https://github.com/SomeDudeOnThisPage/ha-app">the API Reference</a>.
+ *
+ * <p>Running the Application requires JavaFX version <i>11.0.1</i> modules and JRE 11 or greater.
+ *
+ * <p>The Application allows a user to communicate with a WSN using a serial port connection. The user can manage a
+ * {@link FloorPlan} using the GUI and signal a WSN using control surfaces. Thereby, it is the users' responsibility
+ * to ensure consistency between the structure of the virtual model of the Application, and the physical model in their
+ * House. This means that the User needs to know their rooms controllers' and lights' IDs, and create the virtual model
+ * appropriately. The Application can function with rooms or lights not indexed / too many rooms and lights indexed,
+ * but consequently, messages from / to these non-existent devices will have no effect.
+ *
+ * <p>The Application Control / UI Management is split into three main components:
+ * <ul>
+ *   <li>The {@link MainController}, responsible for controlling the menu and core application features</li>
+ *   <li>The {@link CanvasController}, responsible for managing the drawing scenes and interactable elements</li>
+ *   <li>The {@link ControlController} (great naming convention right there!), responsible for managing the control elements and signaling the {@link CommunicationAPI}</li>
+ * </ul>
+ *
+ * <p>The communication itself is defined in the {@link CommunicationAPI}. Upon receiving a message, it uses callbacks
+ * to dynamically signal other parts of the Application. It also exposes a static API for encoding messages based on
+ * room and light IDs. For more information {@link CommunicationAPI}.
  *
  * @author Robin Buhlmann
- * @author Maximilian Morlock (oder wie auch immer man deinen Nachnamen schreibt...)
- *
- * @version 0.1
+ * @author Maximilian Morlock
+ * @version 1.0
  * @since 2019-11-18
  */
 public class Application extends javafx.application.Application
