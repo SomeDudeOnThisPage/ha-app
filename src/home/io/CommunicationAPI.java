@@ -6,8 +6,44 @@ import java.util.logging.Level;
 
 /**
  * <h1>CommunicationAPI</h1>
- * The static CommunicationAPI class is used to handle incoming and outgoing network traffic between the application and the WSN.
- * It uses an APIListener Interface set on creation to implement simple callbacks.
+ * The static CommunicationAPI class is used to handle network traffic between the application and the WSN.
+ * It uses an APIListener Interface set on creation to implement simple callbacks {@link APIListener}.
+ * The traffic is divided into two main parts:
+ * <ul>
+ *     <li>Ingoing messages</li>
+ *     <li>Outgoing messages</li>
+ * </ul>
+ *
+ * Ingoing as well as outgoing messages are represented by Byte[]-Arrays.
+ * Incoming data gets processed for further usage in the application. Data that comes from the application and should
+ * be sent to the WSN gets adapted to the standards of the communication. Many messages are symmetric, meaning they are both in- and outgoing!
+ *
+ *
+ * <br>
+ * To make processing as easy and uniformly as possible, it was chosen that
+ * every message has a fixed length of 5bytes.
+ * The general scheme for in- and outgoing arrays looks like this:
+ * <br>
+ *
+ * Certain rules apply to messages:
+ * <ul>
+ *    <li>A message has a length of five bytes.</li>
+ *    <li>A message starts with an opcode with a length of 1B. Available opcodes are described in detail below.</li>
+ *    <li>Bytes 2-4 are data bytes used for communication. The type of data varies depending on the opcode.</li>
+ *    <li>The fifth byte is a carriage-return delimiter (0x0D) used to split messages.</li>
+ * </ul>
+ *
+ * <p>Opcodes:</p>
+ * <ol>
+ *     <li><b>0x00</b>: start init</li>
+ *     <li><b>0x01</b>: end init</li>
+ *     <li><b>0x02</b>: light_switch</li>
+ *     <li><b>0x03</b>: light_mode</li>
+ *     <li><b>0x04</b>: temperature</li>
+ *     <li><b>0x05</b>: temperature_reference</li>
+ * </ol>
+ * <br><br>
+ * For further details, look at the methods described in detail.
  *
  * @author Maximilian Morlock
  * @version 1.0
@@ -33,10 +69,15 @@ public class CommunicationAPI
 
 
   /**
-   * This outgoing method is used to switch a light to either on or off
-   * @param roomid
-   * @param lightid
-   * @param status
+   * This outgoing method is used to switch a light to either on or off.
+   * The parameters get converted to a single byte each. To get an int value into a single byte, it is parsed
+   * to a HexString at first and then parsed to a byte. This way, the size is reduced from 32bit/4B to 8bit/1B. <br>
+   * Depending on the value for "status", the corresponding
+   * byte either gets the value <b>0x00</b> or <b>0x01</b>.
+   * The bytes get packed into a Byte[]-Array which is then sent to the WSN.
+   * @param roomid unique identifier for a room
+   * @param lightid unique identifier for a light inside a room
+   * @param status the current state of a light. This can either be "on" or "off"
    */
   public static synchronized void setLight(int roomid, int lightid, Light.State status){
     String s = (status == Light.State.LIGHT_ON) ? "on" : "off";
@@ -62,7 +103,8 @@ public class CommunicationAPI
   }
 
   /**
-   * This outgoing method switches a lights' mode to manual or auto
+   * This outgoing method switches a lights' mode to manual or auto. The functionality is identical
+   * to <b>setLight</b> with the only difference being the fourth byte representing the mode rather than the state.
    * @param roomid
    * @param lightid
    * @param mode
