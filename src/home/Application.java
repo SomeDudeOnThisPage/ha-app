@@ -22,7 +22,8 @@ import java.util.Date;
 import java.util.logging.Level;
 
 /**
- * This Application was created for the module "Wireless Sensor Networks with ZigBee" module at FRA-UAS.
+ * This Application was created for the module "Wireless Sensor Networks with ZigBee" at
+ * <a href="https://www.frankfurt-university.de/">Frankfurt University of Applied Sciences</a>.
  * It is designed to be used in conjunction with the WSN-Home-Automation components developed by other
  * parts of the five-man team responsible for this project.
  *
