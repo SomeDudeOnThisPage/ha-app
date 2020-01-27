@@ -104,7 +104,7 @@ public class Application extends javafx.application.Application
 
   /**
    * Creates a new, empty model with a given size.
-   * @param size size in grid-indices, {@see FloorPlan} for details.
+   * @param size size in grid-indices
    */
   public static synchronized void newModel(int size)
   {

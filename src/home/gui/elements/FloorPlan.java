@@ -228,7 +228,6 @@ public class FloorPlan extends Canvas
    * @param x x-coordinate
    * @param y y-coordinate
    * @return point index
-   * @throws Exception something something no closest point found
    */
   public int approximateNearestClickyPoint(double x, double y)
   {
