@@ -4,40 +4,62 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <VBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.gui.elements.LightControl">
    <children>
-      <Label text="Status: Off - Manual">
+      <HBox>
          <VBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-         <font>
-            <Font name="Arial" size="18.0" />
-         </font>
-      </Label>
+         <children>
+            <Label text="Status:">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="state" text="n/a">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="mode" text="n/a">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <font>
+                  <Font name="Arial" size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
       <Separator prefWidth="200.0" />
-      <BorderPane>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-         <center>
-            <Button fx:id="lightSwitchButton" minWidth="300.0" mnemonicParsing="false" onAction="#onLightToggle" text="Light Switch" BorderPane.alignment="CENTER" />
-         </center>
-      </BorderPane>
+      <HBox alignment="CENTER">
+         <children>
+            <Button fx:id="lightSwitchButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onLightToggle" text="Light Switch" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
       <Separator prefWidth="200.0" />
-      <BorderPane>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-         <center>
-            <Button fx:id="lightModeButton" minWidth="500.0" mnemonicParsing="false" onAction="#onModeToggle" text="Mode Toggle" BorderPane.alignment="CENTER" />
-         </center>
-      </BorderPane>
+      <HBox alignment="CENTER">
+         <children>
+            <Button fx:id="lightModeButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="500.0" mnemonicParsing="false" onAction="#onModeToggle" text="Mode Toggle" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
    </children>
 </VBox>

@@ -61,7 +61,6 @@ public class CommunicationAPI
     SerialIO.write(message);
   }
 
-
   /**
    * This outgoing method switches a lights' mode to manual or auto
    * @param roomid

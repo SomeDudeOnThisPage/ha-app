@@ -26,8 +26,6 @@ public class RoomControl implements Initializable
   @FXML
   protected TitledPane sroot;
 
-  // control elements
-
   @FXML
   protected Slider tempRefSlider;
 
@@ -37,10 +35,17 @@ public class RoomControl implements Initializable
   @FXML
   protected Label tempValueLabel;
 
+  /** The Room this controller is managing. */
   private Room room;
 
+  /** List of LightControllers this manager is managing. */
   private ArrayList<LightControl> lightControllers;
 
+  /**
+   * Initializes a list of light controllers.
+   * @param ignored0 ignored
+   * @param ignored1 ignored
+   */
   @Override
   public void initialize(URL ignored0, ResourceBundle ignored1)
   {
@@ -57,14 +62,41 @@ public class RoomControl implements Initializable
     });
   }
 
+  /**
+   * Sets the temperature display text in the room controls.
+   * @param actual temperature
+   */
   public void setTemperature(float actual)
   {
     this.tempValueLabel.setText("Current Room Temperature: " + String.format("%.2f", actual) + "°C");
   }
 
+  /**
+   * Sets the temperature reference display text in the room controls.
+   * @param reference temperature
+   */
+  public void setTemperatureReference(float reference)
+  {
+    this.tempRefLabel.setText(String.format("%.02f", reference) + "°C");
+    this.tempRefSlider.setValue(reference);
+  }
+
+  /**
+   * Returns the controls for a specific light.
+   * @param id lights' ID
+   * @return light object
+   */
   public LightControl getLightControls(int id)
   {
-    return this.lightControllers.get(id);
+    for (LightControl c : this.lightControllers)
+    {
+      if (c.getLight() == id)
+      {
+        return c;
+      }
+    }
+
+    return null;
   }
 
   /**

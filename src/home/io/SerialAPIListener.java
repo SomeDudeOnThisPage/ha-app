@@ -65,6 +65,9 @@ public class SerialAPIListener implements APIListener
       // set state in model
       model.getRoom(roomID).getLight(lightID).setState(state);
 
+      // set state in controller
+      Platform.runLater(() -> Application.control().getRoomControls(roomID).getLightControls(lightID).setState(state));
+
       redraw();
 
       String s = (state == Light.State.LIGHT_ON) ? "on" : "off";
@@ -94,6 +97,9 @@ public class SerialAPIListener implements APIListener
 
       // set state in model
       model.getRoom(roomID).getLight(lightID).setMode(mode);
+
+      // set state in controller
+      Platform.runLater(() -> Application.control().getRoomControls(roomID).getLightControls(lightID).setMode(mode));
 
       redraw();
 
@@ -150,8 +156,10 @@ public class SerialAPIListener implements APIListener
       // set state in model
       model.getRoom(roomID).temperature().setReference(actual);
 
+      System.out.println(actual);
+
       // set state in controller
-      //Platform.runLater(() -> Application.control().getRoomControls(roomID)(actual));
+      Platform.runLater(() -> Application.control().getRoomControls(roomID).setTemperatureReference(actual));
 
       redraw();
 

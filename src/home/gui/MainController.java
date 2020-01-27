@@ -60,6 +60,9 @@ public class MainController implements Initializable
   @FXML
   private Menu menu_SelectSerialPort;
 
+  /**
+   * Room removal menu option.
+   */
   @FXML
   private Menu menu_removeRoom;
 
@@ -69,6 +72,11 @@ public class MainController implements Initializable
   @FXML
   private Label status;
 
+  /**
+   * Controller init.
+   * @param url ignored
+   * @param resources ignored
+   */
   @Override
   public void initialize(URL url, ResourceBundle resources)
   {
@@ -95,6 +103,10 @@ public class MainController implements Initializable
     }
   }
 
+  /**
+   * Populates the remove room menu with a reference to all rooms in a given model.
+   * @param model model
+   */
   public void menu_populateRemoveRoomMenuItem(House model)
   {
     this.menu_removeRoom.getItems().clear();
@@ -375,7 +387,7 @@ public class MainController implements Initializable
     }
   }
 
-  @FXML
+  @FXML @Deprecated
   protected void menu_onRemoveLight()
   {
 
