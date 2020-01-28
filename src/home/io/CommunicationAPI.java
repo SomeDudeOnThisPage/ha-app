@@ -7,7 +7,7 @@ import java.util.logging.Level;
 /**
  * <h1>CommunicationAPI</h1>
  * The static CommunicationAPI class is used to handle network traffic between the application and the WSN.
- * It uses an APIListener Interface set on creation to implement simple callbacks {@link APIListener}.
+ * It uses an {@link APIListener} Interface set on creation to implement simple callbacks .
  * The traffic is divided into two main parts:
  * <ul>
  *     <li>Ingoing messages</li>
@@ -75,9 +75,9 @@ public class CommunicationAPI
    * Depending on the value for "status", the corresponding
    * byte either gets the value <b>0x00</b> or <b>0x01</b>.
    * The bytes get packed into a Byte[]-Array which is then sent to the WSN.
-   * @param roomid unique identifier for a room
-   * @param lightid unique identifier for a light inside a room
-   * @param status the current state of a light. This can either be "on" or "off"
+   * @param roomid unique identifier for a room.
+   * @param lightid unique identifier for a light inside a room.
+   * @param status the current state of a light. This can either be "on" or "off".
    */
   public static synchronized void setLight(int roomid, int lightid, Light.State status){
     String s = (status == Light.State.LIGHT_ON) ? "on" : "off";
@@ -105,9 +105,9 @@ public class CommunicationAPI
   /**
    * This outgoing method switches a lights' mode to manual or auto. The functionality is identical
    * to <b>setLight</b> with the only difference being the fourth byte representing the mode rather than the state.
-   * @param roomid
-   * @param lightid
-   * @param mode
+   * @param roomid unique identifier for a room.
+   * @param lightid unique identifier for a light inside a room.
+   * @param mode the current mode of a light. This can be either "auto" or "manual".
    */
   public static synchronized void setLightMode(int roomid, int lightid, Light.Mode mode){
     //same procedure as for lightState!
@@ -133,9 +133,14 @@ public class CommunicationAPI
 
 
   /**
-   * this outgoing method sends a temperature reference to the WSN
-   * @param roomid
-   * @param temp
+   * This outgoing method sends a temperature reference to the WSN. This reference is
+   * used to control heating/cooling. The float value should be stored in two bytes rather than one float.
+   * One byte is intended for pre-decimal places and the other for post-decimal places.
+   * The post-decimal places are firstly converted to an integer value by a multiplication + mod-division by "100".
+   * Then, both values are independently parsed to a HexString to a byte. After this, the Array gets filled with
+   * the pre-decimal integer being the third and the post-decimal integer being the fourth byte.
+   * @param roomid unique identifier for a room.
+   * @param temp the actual value for the temperature_reference of the room.
    */
   public static synchronized void tempReference(int roomid, float temp){
     //To get the int value for everything before the decimal point
@@ -165,7 +170,8 @@ public class CommunicationAPI
   }
 
   /**
-   * Outgoing method for initializing WSN
+   * Outgoing method for initializing WSN. Since no further data is needed for the
+   * initialization message, the values beside the opcode "0" are "0" aswell.
    */
   public static synchronized void init()
   {
@@ -176,7 +182,13 @@ public class CommunicationAPI
 
   /**
    * This method is called by the serial-management class when an ingoing message is received.
-   * @param data Received data in form of a Byte[] Array
+   * The method checks, whether a listener is available and prints out an Error message if not.
+   * Also it verifies, that the incoming Array has a proper length of 5bytes.
+   * The ingoing messages are then processed by their unique opcode which is represented by the first byte.
+   * <b>An ordered list of all opcodes can be seen in the class description.</b>
+   * A switch-statement proceeds with further instructions and triggers the callback functions with the fitting parameters. If the
+   * received opcode fits to no instruction, a message gets printed to the console.
+   * @param data Received data in form of a Byte[] Array.
    * @see SerialIO
    */
   public static void update(Byte[] data) {
