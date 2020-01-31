@@ -54,7 +54,7 @@
       <Separator prefWidth="200.0" />
       <HBox alignment="CENTER">
          <children>
-            <Button fx:id="lightModeButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="500.0" mnemonicParsing="false" onAction="#onModeToggle" text="Mode Toggle" textAlignment="CENTER" HBox.hgrow="ALWAYS">
+            <Button fx:id="lightModeButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onModeToggle" text="Mode Toggle" textAlignment="CENTER" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>

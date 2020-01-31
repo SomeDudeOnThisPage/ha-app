@@ -425,5 +425,6 @@ public class MainController implements Initializable
   {
     SerialIO.cleanup();
     Application.STAGE.setTitle(Application.TITLE + " - no port selected");
+    Application.control().disableControls(true);
   }
 }

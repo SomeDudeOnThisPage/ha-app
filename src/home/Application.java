@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.json.simple.JSONObject;
 
 import java.io.File;
@@ -301,7 +302,7 @@ public class Application extends javafx.application.Application
     Scene scene = new Scene(loader.load());
     Application.controller = loader.getController();
 
-    scene.getStylesheets().add("materialfx.css");
+    //scene.getStylesheets().add("materialfx.css");
     scene.getStylesheets().add("application_default.css");
 
     stage.setTitle(Application.TITLE + " - no port selected");

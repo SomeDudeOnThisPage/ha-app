@@ -1,14 +1,84 @@
+*
+{
+    -fx-base: #2d3436;
+    -fx-base-highlight: #636e72;
+    -fx-font-color: #dfe6e9;
+    -fx-font-color-highlighted: #636e72;
+}
+
+.root
+{
+    -fx-font-family: "Modena", Arial, sans-serif;
+    -fx-text-fill: -fx-font-color;
+    -fx-font-size: 14px;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+
+    -fx-background-color: -fx-base;
+}
+
 .scroll-pane > .viewport
 {
-   -fx-background-color: transparent;
+    -fx-background-color: transparent;
 }
 
 .scroll-pane
 {
-   -fx-background-color: #FFFFFF;
+    -fx-background-color: #dfe6e9;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane:focused
+{
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .corner
+{
+    -fx-background-insets: 0;
 }
 
 .view-label *.text
 {
     -fx-text-alignment: center;
+}
+
+.menu-bar
+{
+    -fx-background-color: -fx-base;
+    -fx-padding: 0;
+}
+
+.menu-bar > .container > .menu-button > .label
+{
+    -fx-padding: 5;
+    -fx-text-fill: -fx-font-color;
+}
+
+.menu-bar > .container > .menu-button:hover,
+.menu-bar > .container > .menu-button:focused,
+.menu-bar > .container > .menu-button:showing
+{
+    -fx-background-color: -fx-base-highlight;
+}
+
+.menu, .menu-item, .context-menu
+{
+    -fx-background-color: -fx-base;
+}
+
+.menu-item:hover, .menu-item:focused
+{
+    -fx-background-color: -fx-base-highlight;
+}
+
+.accordion
+{
+    -fx-background-color: -fx-base;
+}
+
+.button
+{
+    -fx-border-radius: 0;
 }

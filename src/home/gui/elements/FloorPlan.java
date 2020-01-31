@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * FloorPlan class extending Canvas.
  * Used for visual representation of our current model.
  *
- * WARNING: THIS CLASS IS A MESS. THE CODE IS A MESS. THE DRAWING METHODS ARE A MESS.
+ * <p>WARNING: THIS CLASS IS A MESS. THE CODE IS A MESS. THE DRAWING METHODS ARE A MESS.
  *
  * @author Robin Buhlmann
  * @version 0.1
@@ -42,6 +42,9 @@ public class FloorPlan extends Canvas
    */
   private static final double LIGHT_SIZE = 64.0f;
 
+  /**
+   * Content root.
+   */
   private AnchorPane croot;
 
   /**
@@ -93,28 +96,6 @@ public class FloorPlan extends Canvas
   }
 
   /**
-   * Creates and renders a single light sprite at given coordinates.
-   * @param light light
-   * @param drawID draw the ID of the light as text or not
-   */
-  private void drawLight(Light light, boolean drawID)
-  {
-    light.setTranslateX(light.getPosition()[0] * this.scaleFactor);
-    light.setTranslateY(light.getPosition()[1] * this.scaleFactor);
-
-    if (light.getState() == Light.State.LIGHT_ON)
-    {
-      light.setFill(Color.YELLOW);
-    }
-    else
-    {
-      light.setFill(Color.BLACK);
-    }
-
-    light.setRadius((this.scaleFactor / 2.0f) * FloorPlan.LIGHT_SIZE / 2);
-  }
-
-  /**
    * Creates and renders a single room polygon.
    * @param indices polygon indices
    */
@@ -140,8 +121,8 @@ public class FloorPlan extends Canvas
   }
 
   /**
-   * Draws all lights of a model.
-   * @param model model
+   * Draws all lights of the model.
+   * @param model model containing the rooms containing the lights
    */
   private void drawLights(House model)
   {
@@ -149,11 +130,27 @@ public class FloorPlan extends Canvas
     {
       for (Light light : room.getLights())
       {
-        this.drawLight(light, true);
+        light.setTranslateX(light.getPosition()[0] * this.scaleFactor);
+        light.setTranslateY(light.getPosition()[1] * this.scaleFactor);
+
+        if (light.getState() == Light.State.LIGHT_ON)
+        {
+          light.setFill(Color.YELLOW);
+        }
+        else
+        {
+          light.setFill(Color.BLACK);
+        }
+
+        light.setRadius((this.scaleFactor / 2.0f) * FloorPlan.LIGHT_SIZE / 2);
       }
     }
   }
 
+  /**
+   * Internal convenience method for adding all lights of a model to the scene.
+   * @param model model containing the rooms containing the lights
+   */
   private void addLights(House model)
   {
     for (Room room: model.getRooms())
@@ -165,21 +162,24 @@ public class FloorPlan extends Canvas
     }
   }
 
-  private void drawLabel(TextLabel label)
-  {
-    label.setTranslateX(label.getPosition()[0] * this.scaleFactor);
-    label.setTranslateY(label.getPosition()[1] * this.scaleFactor);
-    label.setFont(new Font("arial", this.scaleFactor * label.getSize()));
-  }
-
+  /**
+   * Repositions all labels depending on the scale of the canvas.
+   * @param model model containing the rooms containing the labels
+   */
   private void drawLabels(House model)
   {
     for (TextLabel label : model.getLabels())
     {
-      this.drawLabel(label);
+      label.setTranslateX(label.getPosition()[0] * this.scaleFactor);
+      label.setTranslateY(label.getPosition()[1] * this.scaleFactor);
+      label.setFont(new Font("arial", this.scaleFactor * label.getSize()));
     }
   }
 
+  /**
+   * Internal convenience method for adding all labels of a model to the scene.
+   * @param model model containing the labels
+   */
   private void addLabels(House model)
   {
     for (TextLabel label : model.getLabels())
@@ -188,6 +188,10 @@ public class FloorPlan extends Canvas
     }
   }
 
+  /**
+   * Repositions all temperatures depending on the scale of the canvas.
+   * @param model model containing the rooms containing the temperatures
+   */
   private void drawTemperatures(House model)
   {
     for (Room room : model.getRooms())
@@ -207,6 +211,10 @@ public class FloorPlan extends Canvas
     }
   }
 
+  /**
+   * Internal convenience method for adding all temperatures of a model to the scene.
+   * @param model model containing the rooms containing the temperatures
+   */
   private void addTemperatures(House model)
   {
     for (Room room : model.getRooms())
