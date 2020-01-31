@@ -13,24 +13,24 @@ public interface APIListener
 {
   /**
    * Definition for onLightSwitch callback
-   * @param roomID
-   * @param lightID
-   * @param state
+   * @param roomID unique identifier for a room.
+   * @param lightID unique identifier for a light inside a room.
+   * @param state state for the light. Can be either "on" or "off".
    */
   void onLightSwitch(int roomID, int lightID, Light.State state);
 
   /**
    * Definition for onLightMode callback
-   * @param roomID
-   * @param lightID
-   * @param mode
+   * @param roomID unique identifier for a room.
+   * @param lightID unique identifier for a light inside a room.
+   * @param mode mode for the light. Can be either "auto" or "manual".
    */
   void onLightMode(int roomID, int lightID, Light.Mode mode);
 
   /**
    * Definition for onTemperature callback
-   * @param roomID
-   * @param actual
+   * @param roomID unique identifier for a room.
+   * @param actual temperature value.
    */
   void onTemperature(int roomID, float actual);
 
@@ -42,8 +42,8 @@ public interface APIListener
 
   /**
    * Definition for onTemperature callback
-   * @param roomID
-   * @param actual
+   * @param roomID unique identifier for a room.
+   * @param actual temperature value.
    */
   void onTemperatureReference(int roomID, float actual);
 
