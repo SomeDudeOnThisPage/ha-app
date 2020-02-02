@@ -57,7 +57,7 @@ public class SerialAPIListener implements APIListener
   @Override
   public void onLightSwitch(int roomID, int lightID, Light.State state)
   {
-    Application.debug("method \'onLightSwitch\' has been called");
+    Application.debug("method 'onLightSwitch' has been called");
     try
     {
       House model = this.verify(roomID, lightID);
@@ -72,7 +72,7 @@ public class SerialAPIListener implements APIListener
 
       String s = (state == Light.State.LIGHT_ON) ? "on" : "off";
 
-      Application.status("Turned " + s + " light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
+      Application.status("Turned " + s + " light #" + lightID + " in '" + model.getRoom(roomID).getName() + "'");
     }
     catch(Exception e)
     {
@@ -90,7 +90,7 @@ public class SerialAPIListener implements APIListener
   @Override
   public void onLightMode(int roomID, int lightID, Light.Mode mode)
   {
-    Application.debug("method \'onLightMode\' has been called");
+    Application.debug("method 'onLightMode' has been called");
     try
     {
       House model = this.verify(roomID, lightID);
@@ -103,7 +103,7 @@ public class SerialAPIListener implements APIListener
 
       redraw();
 
-      Application.status("changed mode of light #" + lightID + " in \'" + model.getRoom(roomID).getName() + "\'");
+      Application.status("changed mode of light #" + lightID + " in '" + model.getRoom(roomID).getName() + "'");
     }
     catch(Exception e)
     {
@@ -120,7 +120,7 @@ public class SerialAPIListener implements APIListener
   @Override
   public void onTemperature(int roomID, float actual)
   {
-    Application.debug("method \'onTemperature\' has been called");
+    Application.debug("method 'onTemperature' has been called");
     try
     {
       House model = this.verify(roomID, -1);
@@ -144,10 +144,15 @@ public class SerialAPIListener implements APIListener
     }
   }
 
+  /**
+   * Implementation of the onTemperatureReference callback.
+   * @param roomID room ID
+   * @param actual actual temperature
+   */
   @Override
   public void onTemperatureReference(int roomID, float actual)
   {
-    Application.debug("method \'onTemperatureReference\' has been called");
+    Application.debug("method 'onTemperatureReference' has been called");
 
     try
     {
@@ -180,7 +185,7 @@ public class SerialAPIListener implements APIListener
   @Override
   public void onDebug(String message)
   {
-    Application.debug("method \'onDebug\' has been called");
+    Application.debug("method 'onDebug' has been called");
     Application.debug("[WSN]: " + message);
   }
 

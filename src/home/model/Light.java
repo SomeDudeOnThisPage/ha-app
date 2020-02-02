@@ -179,6 +179,9 @@ public class Light extends Circle
       this.setCursor(Cursor.DEFAULT);
     });
 
+    this.setOnMouseEntered(e -> this.setCursor(Cursor.CROSSHAIR));
+    this.setOnMouseExited(e -> this.setCursor(Cursor.DEFAULT));
+
     this.setOnMouseDragged(e -> {
       if (e.isShiftDown() && e.getButton() == MouseButton.PRIMARY && !Application.canvas().isDrawing())
       {

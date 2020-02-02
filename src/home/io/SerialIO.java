@@ -48,7 +48,7 @@ public class SerialIO
       }
       string.append(hex);
     }
-    return string.toString();
+    return string.toString().toUpperCase();
   }
 
   /**
@@ -60,7 +60,7 @@ public class SerialIO
     SerialPort[] ports = SerialIO.getPorts();
     for (SerialPort port : ports)
     {
-      Application.debug("found registered serial port \'" + port.getDescriptivePortName() + "\' at \'" + port.getSystemPortName() + "\'");
+      Application.debug("found registered serial port '" + port.getDescriptivePortName() + "' at '" + port.getSystemPortName() + "'");
     }
 
     SerialIO.init = true;
@@ -92,7 +92,7 @@ public class SerialIO
 
     if (port != null)
     {
-      Application.debug("connecting to serial port \'" + port.getDescriptivePortName() + "\' at \'" + port.getSystemPortName() + "\'");
+      Application.debug("connecting to serial port '" + port.getDescriptivePortName() + "' at '" + port.getSystemPortName() + "'");
 
       // open the port to be able to write and read from it
       SerialIO.current.openPort();
@@ -130,7 +130,7 @@ public class SerialIO
             SerialIO.messages = (message.length > 1) ? message[1] : "";
 
             byte[] bytes = message[0].getBytes();
-            Application.debug("received data packet with size of " + message[0].length() + " bytes with content \'0x" + toHexString(bytes) + "\'");
+            Application.debug("received data packet with content '0x" + toHexString(bytes) + "'");
 
             // convert byte[] to Byte[] as we need the functionality of the non-primitive in the CommunicationAPI
             Byte[] output = new Byte[bytes.length];
@@ -160,11 +160,14 @@ public class SerialIO
     return SerialPort.getCommPorts();
   }
 
+  /**
+   * Idk, just call when you're done.
+   */
   public static synchronized void cleanup()
   {
     if (SerialIO.current != null)
     {
-      Application.debug("closing connection to serial port \'" + SerialIO.current.getDescriptivePortName() + "\' at \'" + SerialIO.current.getSystemPortName() + "\'");
+      Application.debug("closing connection to serial port '" + SerialIO.current.getDescriptivePortName() + "' at '" + SerialIO.current.getSystemPortName() + "'");
       SerialIO.current.closePort();
       SerialIO.current = null;
     }
@@ -200,6 +203,6 @@ public class SerialIO
     SerialIO.current.writeBytes(output, data.length);
 
     // let's not print line breaks in debug messages
-    Application.debug("sent data packet with content \'" + new String(output).replace("\n", "\\n").replace("\r", "\\r") + "\'");
+    Application.debug("sent data packet with content '0x" + toHexString(output) + "'");
   }
 }

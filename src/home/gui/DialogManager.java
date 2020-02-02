@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 /**
- * All this class does is provide a collection of dialogs used throughout the app.
- * So boring I didn't even bother to comment it. Arrest me.
- * Also the code is inefficient af.
+ * All this class does is provide a static collection of dialogs used throughout the app.
+ * <p>So boring I didn't even bother to comment it. Arrest me.
+ * <p>Also the code is inefficient and very bad, a lot of code is just reused in every methodssss.
+ * <p>Just ignore this class.
+ * <p>Seriously.
  */
 public class DialogManager
 {

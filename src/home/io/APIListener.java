@@ -36,8 +36,9 @@ public interface APIListener
 
   /**
    * Definition for onDebug callback
-   * @param message
+   * @param message debug message
    */
+  @Deprecated
   void onDebug(String message);
 
   /**

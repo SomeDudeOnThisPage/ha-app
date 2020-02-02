@@ -117,7 +117,7 @@ public class MainController implements Initializable
       item.setUserData(room);
 
       item.setOnAction(e -> {
-        boolean delete = DialogManager.confirm("Delete \'" + room.getName() + "\'", "Are you sure you want to delete the Room \'" + room.getName() + "\'?\nThis cannot be undone.");
+        boolean delete = DialogManager.confirm("Delete '" + room.getName() + "'", "Are you sure you want to delete the Room '" + room.getName() + "'?\nThis cannot be undone.");
         if (delete)
         {
           Application.getModel().removeRoom((Room) item.getUserData());
@@ -200,7 +200,7 @@ public class MainController implements Initializable
 
     if (map != null && !map.isDirectory())
     {
-      Application.debug("creating new model from map \'" + map.getPath() + "\'");
+      Application.debug("creating new model from map '" + map.getPath() + "'");
 
       // load from json
       JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(map));
@@ -235,6 +235,12 @@ public class MainController implements Initializable
   @FXML
   protected void menu_onSave()
   {
+    if (Application.getModel() == null)
+    {
+      DialogManager.error("could not save map", "no map is loaded at the current time");
+      return;
+    }
+
     if (Application.SAVE == null)
     {
       // no current save path, show name selection dialog (same functionality as File > Save As)
@@ -246,17 +252,34 @@ public class MainController implements Initializable
       Application.saveModel(null);
     }
 
-    Application.status("Model saved as \'" + Application.SAVE + "\'!");
+    Application.status("Model saved as '" + Application.SAVE + "'!");
   }
 
   @FXML
   protected void menu_onSaveAs()
   {
-    // query new handle
-    // todo...
+    if (Application.getModel() == null)
+    {
+      DialogManager.error("could not save map", "no map is loaded at the current time");
+      return;
+    }
 
-    // save on new handle
-    Application.status("Model saved as \'" + Application.SAVE + "\'!");
+    // query new handle
+    // simple JavaFX file chooser to save our map
+    FileChooser selector = new FileChooser();
+    selector.setTitle("Select Save File...");
+    selector.setInitialDirectory(new File(Application.SAVE_DIRECTORY));
+
+    selector.getExtensionFilters().add(new FileChooser.ExtensionFilter("jmap files (*.jmap)", "*.jmap"));
+
+    File save = selector.showSaveDialog(Application.STAGE);
+
+    if (save != null)
+    {
+      // save on new handle
+      Application.saveModel(save.getPath());
+      Application.status("Model saved as '" + Application.SAVE + "'!");
+    }
   }
 
   @FXML
