@@ -118,7 +118,7 @@ public class Light extends Circle
     this.id = id;
 
     this.state = State.LIGHT_OFF;
-    this.mode = Mode.MODE_AUTOMATIC;
+    this.mode = Mode.MODE_MANUAL;
 
     this.name = name;
 

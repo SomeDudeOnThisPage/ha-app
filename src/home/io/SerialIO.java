@@ -17,7 +17,7 @@ public class SerialIO
   /**
    * As set in usartManager.h
    */
-  private static final int USART_PACKET_SIZE = 50;
+  private static final int USART_PACKET_SIZE = 8;
 
   /**
    * As set in usartManager.h
