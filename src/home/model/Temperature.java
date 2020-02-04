@@ -2,6 +2,7 @@ package home.model;
 
 import home.Application;
 import home.gui.DialogManager;
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.scene.Cursor;
@@ -58,7 +59,7 @@ public class Temperature extends ImageView
     String v = (this.value <= 0) ? "n/a" : this.value + "°C";
     String reference = (this.reference <= 0) ? "n/a" : this.reference + "°C";
 
-    this.tooltip.setText("Room:\t" + this.name + "\nCurrent Temperature:\t" + v + "\nReference Temperature:\t" + reference);
+    Platform.runLater(() -> this.tooltip.setText("Room:\t" + this.name + "\nCurrent Temperature:\t" + v + "\nReference Temperature:\t" + reference));
   }
 
   public Temperature(float reference, float value, double[] position, String name)

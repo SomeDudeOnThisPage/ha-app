@@ -2,6 +2,7 @@ package home.model;
 
 import home.Application;
 import home.gui.DialogManager;
+import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
@@ -105,7 +106,7 @@ public class Light extends Circle
   {
     //Tooltip.uninstall(this, this.tooltip);
     //Tooltip.install(this, tooltip);
-    this.tooltip.setText("Room:\t" + this.name + "\nLight\t#" + this.id + "\nState:\t" + this.state + "\nMode:\t" + this.mode);
+    Platform.runLater(() -> this.tooltip.setText("Room:\t" + this.name + "\nLight\t#" + this.id + "\nState:\t" + this.state + "\nMode:\t" + this.mode));
   }
 
   /**
